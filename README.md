@@ -6,7 +6,7 @@
 
 ## 在线内容
 
-- 16 道恶臭采样题
+- 30 道恶臭采样题库，每次随机抽 12 题
 - 16 种原创程序员人格结果
 - 每种人格对应 1 张生成式抽象图片
 - 1000 条程序员风格个性签名
@@ -21,11 +21,114 @@
 
 ```text
 .
-├── index.html          # 主页面，包含 HTML/CSS/JS 全部逻辑
+├── index.html          # 主页面，包含 HTML/CSS/JS 交互逻辑
+├── data/               # 可编辑题库和个性签名配置
+│   ├── questions.js    # 30 题题库，每次随机抽 12 题
+│   └── signatures.js   # 个性签名种子和生成配置
 ├── sbit-assets/        # 16 张人格结果图片
 ├── start.command       # macOS 本地启动脚本
 └── README.md           # 项目说明
 ```
+
+
+## 原创仓库
+
+原创仓库地址：<https://github.com/scarea/sbti>
+
+如果你要二次开发、魔改题库或部署自己的版本，建议先 Fork 原仓库，再在自己的仓库中修改。
+
+## Fork 与二次开发
+
+### 1. Fork 仓库
+
+打开原创仓库：
+
+```text
+https://github.com/scarea/sbti
+```
+
+点击右上角 `Fork`，复制到你自己的 GitHub 账号下。
+
+### 2. 克隆到本地
+
+```bash
+git clone https://github.com/你的用户名/sbti.git
+cd sbti
+```
+
+### 3. 新增题目
+
+编辑：
+
+```text
+data/questions.js
+```
+
+复制一个已有题目对象，修改 `text` 和 4 个 `choices` 即可。每个选项结构如下：
+
+```js
+{
+  title: "选项标题",
+  note: "选项吐槽说明",
+  score: { M: 2, F: 1 }
+}
+```
+
+可用分数维度：
+
+| Key | 含义 |
+| --- | --- |
+| M | 摸鱼 |
+| L | 劳模/执行 |
+| Z | 装忙/汇报 |
+| S | 清醒/理性 |
+| D | 躲避/厕所/离席 |
+| J | 工单/流程/假性卷 |
+| F | 反骨/反抗 |
+| R | 认命/顺从 |
+
+题库可以继续扩展，不需要改页面逻辑；页面会自动从题库中随机抽 12 题。
+
+### 4. 新增个性签名
+
+编辑：
+
+```text
+data/signatures.js
+```
+
+常用改法：
+
+- 给某个人格的 `signatureSeeds.CODE` 增加短句。
+- 给 `globalSignatureSeeds` 增加全局签名。
+- 高阶改法：调整 `signatureProfiles` 中的 `subject / verb / tail`，让系统自动组合更多句子。
+
+示例：
+
+```js
+IMFW: [
+  "今天不是我在写代码，是键盘拖着尸体走。",
+  "新增一句你自己的抽象签名。"
+]
+```
+
+### 5. 提交修改
+
+```bash
+git add .
+git commit -m "Customize SBIT content"
+git push
+```
+
+## 一键托管
+
+你可以直接把原创仓库一键部署到免费平台，也可以先 Fork 后部署自己的版本。
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/scarea/sbti)
+
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/scarea/sbti)
+
+如果你已经 Fork 到自己的账号，部署时把 `repository-url` 换成自己的仓库地址即可。
 
 ## 本地运行
 
@@ -62,6 +165,7 @@ start.command
 
 ```text
 index.html
+data/
 sbit-assets/
 README.md
 start.command
@@ -78,7 +182,7 @@ start.command
 
 ### GitHub Pages 部署
 
-1. 将本项目提交到 GitHub 仓库。
+1. 将本项目提交到 GitHub 仓库，或 Fork 原创仓库。
 2. 打开仓库 `Settings` → `Pages`。
 3. Source 选择 `Deploy from a branch`。
 4. Branch 选择 `main`，目录选择 `/root`。
@@ -145,6 +249,7 @@ https://你的域名/index.html?result=RAGE#sharedView
 
 ## AI 生成声明
 
+- 原创仓库为 <https://github.com/scarea/sbti>。
 - 本项目全部代码由 AI 生成并迭代完成，包括 HTML、CSS、JavaScript、交互逻辑、文案结构与 README。
 - 项目中的人格图片为 AI 生成图片资产，用于本娱乐项目的视觉呈现。
 - 文案为 AI 基于用户需求生成和改写，主题围绕「恶臭程序员」「年轻人丧感」「职场反讽」「研发热梗」。
