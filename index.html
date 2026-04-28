@@ -1,0 +1,2523 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SBIT 恶臭程序员人格测试</title>
+  <style>
+    :root {
+      --bg: #10100e;
+      --panel: #191915;
+      --panel-2: #222117;
+      --ink: #f5f0d8;
+      --muted: #9f9a83;
+      --acid: #d7ff36;
+      --slime: #74ff79;
+      --hot: #ff4f9a;
+      --bruise: #8270ff;
+      --rust: #ff7b2f;
+      --line: rgba(245, 240, 216, .16);
+      --shadow: 0 30px 80px rgba(0, 0, 0, .45);
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      --mx: 50vw;
+      --my: 20vh;
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: ui-rounded, "SF Pro Rounded", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      background:
+        linear-gradient(90deg, var(--acid) var(--scroll, 0%), transparent var(--scroll, 0%)) 0 0 / 100% 3px no-repeat fixed,
+        radial-gradient(circle at 12% 16%, rgba(255, 79, 154, .22), transparent 24rem),
+        radial-gradient(circle at 88% 10%, rgba(116, 255, 121, .18), transparent 25rem),
+        radial-gradient(circle at 60% 92%, rgba(130, 112, 255, .2), transparent 28rem),
+        linear-gradient(145deg, #080807 0%, #15150f 48%, #0e100b 100%);
+      overflow-x: hidden;
+      transition: background .35s ease, color .35s ease;
+    }
+
+    body.light {
+      --bg: #f4f0df;
+      --panel: #fbf7e8;
+      --panel-2: #ece4cf;
+      --ink: #161812;
+      --muted: #5e604f;
+      --line: rgba(18, 20, 14, .16);
+      --shadow: 0 30px 80px rgba(54, 65, 28, .16);
+      background:
+        linear-gradient(90deg, #111 var(--scroll, 0%), transparent var(--scroll, 0%)) 0 0 / 100% 3px no-repeat fixed,
+        radial-gradient(circle at 12% 16%, rgba(255, 79, 154, .20), transparent 24rem),
+        radial-gradient(circle at 88% 10%, rgba(116, 255, 121, .22), transparent 25rem),
+        linear-gradient(145deg, #f6f1df 0%, #ede6ce 48%, #f8f5e7 100%);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: radial-gradient(circle 360px at var(--mx) var(--my), rgba(215,255,54,.13), rgba(255,79,154,.05) 34%, transparent 68%);
+      mix-blend-mode: screen;
+      transition: background .12s linear;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      opacity: .26;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size: 26px 26px;
+      mask-image: radial-gradient(circle at center, black, transparent 82%);
+    }
+
+
+    .code-rain-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      width: 100vw;
+      height: 100vh;
+      opacity: .24;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      filter: saturate(1.25) contrast(1.12);
+    }
+    body.light .code-rain-canvas { opacity: .13; mix-blend-mode: multiply; }
+    .topbar, main, .modal-backdrop, .toast { position: relative; z-index: 1; }
+
+    button, input { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+    .shell { width: min(1180px, calc(100% - 34px)); margin: 0 auto; }
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 13px;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(245,240,216,.07);
+      cursor: pointer;
+      font-weight: 1000;
+    }
+    body.light .theme-toggle { background: rgba(18,20,14,.06); }
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .55s ease, transform .55s ease; }
+    .reveal.in-view { opacity: 1; transform: translateY(0); }
+
+    .topbar {
+      position: sticky;
+      top: 14px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 14px auto 0;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(16, 16, 14, .74);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 1000; letter-spacing: -.05em; }
+    .logo {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      color: #111;
+      border-radius: 15px 20px 14px 18px;
+      background: conic-gradient(from 130deg, var(--acid), var(--hot), var(--slime), var(--acid));
+      transform: rotate(-5deg);
+      box-shadow: 0 0 28px rgba(215, 255, 54, .26);
+    }
+
+    .nav { display: flex; gap: 8px; color: var(--muted); font-size: 14px; font-weight: 900; }
+    .nav a { padding: 10px 13px; border-radius: 999px; }
+    .nav a:hover { color: #111; background: var(--acid); }
+
+    .cta, .ghost {
+      border: 0;
+      cursor: pointer;
+      font-weight: 1000;
+      transition: transform .18s ease, filter .18s ease, background .18s ease;
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 20px;
+      color: #111;
+      border-radius: 999px;
+      background: var(--acid);
+      box-shadow: 0 0 34px rgba(215, 255, 54, .22);
+    }
+
+    .ghost {
+      padding: 14px 18px;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(245, 240, 216, .06);
+    }
+
+    .cta:hover, .ghost:hover, .choice:hover { transform: translateY(-2px) rotate(-.3deg); filter: saturate(1.2); }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.04fr .96fr;
+      gap: 42px;
+      align-items: center;
+      min-height: calc(100vh - 80px);
+      padding: 58px 0 88px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      width: fit-content;
+      margin-bottom: 18px;
+      padding: 9px 13px;
+      color: var(--acid);
+      font-size: 13px;
+      font-weight: 1000;
+      border: 1px solid rgba(215, 255, 54, .28);
+      border-radius: 999px;
+      background: rgba(215, 255, 54, .08);
+      transform: rotate(-1.2deg);
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      margin-bottom: 24px;
+      font-size: clamp(50px, 9vw, 116px);
+      line-height: .84;
+      letter-spacing: -.095em;
+      text-transform: uppercase;
+    }
+
+    .hero-title span {
+      display: block;
+      width: fit-content;
+      color: #111;
+      padding: .02em .1em .08em;
+      border-radius: 22px 12px 26px 14px;
+      background: var(--acid);
+      transform: rotate(-2deg);
+      box-shadow: 12px 12px 0 rgba(255, 79, 154, .92);
+    }
+
+    .lead {
+      max-width: 650px;
+      margin-bottom: 28px;
+      color: var(--muted);
+      font-size: clamp(17px, 2vw, 22px);
+      line-height: 1.78;
+      font-weight: 760;
+    }
+
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
+    .microstats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; max-width: 660px; }
+    .stat {
+      min-height: 112px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 24px 18px 28px 17px;
+      background: rgba(245, 240, 216, .055);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .stat:nth-child(2) { transform: rotate(1.2deg); }
+    .stat:nth-child(3) { transform: rotate(-1deg); }
+    .stat b { display: block; margin-bottom: 8px; color: var(--acid); font-size: 34px; letter-spacing: -.07em; }
+    .stat small { color: var(--muted); font-weight: 900; line-height: 1.45; }
+
+    .hero-art { position: relative; min-height: 610px; }
+    .poster {
+      position: absolute;
+      inset: 50px 10px auto 28px;
+      min-height: 520px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 46px 26px 54px 22px;
+      background:
+        linear-gradient(135deg, rgba(245,240,216,.08), rgba(245,240,216,.025)),
+        radial-gradient(circle at 82% 18%, rgba(215,255,54,.25), transparent 12rem),
+        radial-gradient(circle at 20% 74%, rgba(255,79,154,.22), transparent 13rem);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transform: rotate(1.4deg);
+    }
+
+    .poster::before, .poster::after {
+      content: "";
+      position: absolute;
+      inset: 20px;
+      border: 1px dashed rgba(245, 240, 216, .18);
+      border-radius: inherit;
+      transform: rotate(-4deg);
+    }
+    .poster::after {
+      inset: auto -20px 38px 40px;
+      height: 92px;
+      border: 0;
+      background: repeating-linear-gradient(-8deg, var(--acid) 0 18px, transparent 18px 32px);
+      opacity: .65;
+      filter: blur(.2px);
+    }
+
+    .terminal {
+      position: relative;
+      z-index: 2;
+      width: min(440px, 92%);
+      padding: 20px;
+      border: 1px solid rgba(215,255,54,.35);
+      border-radius: 28px 18px 32px 16px;
+      background: #0b0b09;
+      box-shadow: 18px 18px 0 rgba(0,0,0,.22), 0 0 40px rgba(215,255,54,.1);
+      transform: rotate(-5deg);
+    }
+
+    .terminal .line { height: 16px; margin: 12px 0; border-radius: 99px; background: linear-gradient(90deg, var(--c) var(--w), rgba(245,240,216,.08) var(--w)); }
+    .terminal strong { display: block; margin-bottom: 16px; color: var(--hot); font-size: 18px; letter-spacing: .04em; }
+
+    .sticker {
+      position: absolute;
+      z-index: 4;
+      right: 0;
+      bottom: 56px;
+      width: min(390px, 82%);
+      padding: 22px;
+      color: #111;
+      border-radius: 28px 16px 34px 18px;
+      background: var(--acid);
+      box-shadow: 18px 20px 0 rgba(255, 79, 154, .72), var(--shadow);
+      transform: rotate(-3deg);
+    }
+    .sticker strong { display: block; margin-bottom: 8px; font-size: 54px; line-height: .86; letter-spacing: -.09em; }
+    .sticker span { font-weight: 1000; line-height: 1.5; }
+
+    .abstract-hero {
+      position: absolute;
+      z-index: 3;
+      left: 4px;
+      bottom: 0;
+      width: min(390px, 76%);
+      aspect-ratio: 418 / 470;
+      border-radius: 30px 16px 34px 18px;
+      background-image: url("sbit-assets/imfw.png");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: drop-shadow(0 28px 30px rgba(0,0,0,.32));
+      transform: rotate(-4deg);
+    }
+
+    section { padding: 76px 0; scroll-margin-top: 88px; }
+    #quiz { overflow: clip; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
+    .section-head h2 { max-width: 780px; margin-bottom: 0; font-size: clamp(36px, 5.6vw, 72px); line-height: .95; letter-spacing: -.075em; }
+    .section-head p { max-width: 390px; margin-bottom: 0; color: var(--muted); line-height: 1.7; font-weight: 800; }
+
+    .feature-grid, .types { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .feature, .type-card, .quiz-panel, .result-card {
+      border: 1px solid var(--line);
+      background: rgba(245, 240, 216, .055);
+      box-shadow: var(--shadow);
+    }
+    .feature { min-height: 210px; padding: 22px; border-radius: 30px 18px 34px 16px; }
+    .feature:nth-child(2n) { transform: rotate(.8deg); }
+    .feature:nth-child(3n) { transform: rotate(-.8deg); }
+    .icon { display: grid; place-items: center; width: 56px; height: 56px; margin-bottom: 18px; color: #111; font-size: 24px; border-radius: 18px; background: var(--hot); }
+    .feature h3, .type-card h3 { margin-bottom: 10px; font-size: 23px; letter-spacing: -.04em; }
+    .feature p, .type-card p { margin: 0; color: var(--muted); line-height: 1.65; font-weight: 780; }
+
+    .quiz-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(360px, 420px); gap: 18px; align-items: start; }
+    .quiz-panel { position: relative; align-self: start; min-height: auto; padding: clamp(18px, 3vw, 30px); border-radius: 38px 20px 42px 18px; overflow: hidden; }
+    .quiz-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(90deg, transparent, rgba(215,255,54,.07), transparent);
+      transform: translateX(-120%);
+      animation: sweep 5.2s linear infinite;
+    }
+    @keyframes sweep { 55%, 100% { transform: translateX(120%); } }
+    .progress-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; color: var(--muted); font-weight: 1000; }
+    .progress { flex: 1; height: 12px; overflow: hidden; border-radius: 999px; background: rgba(245,240,216,.1); box-shadow: inset 0 0 0 1px rgba(245,240,216,.04); }
+    .bar { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--hot), var(--acid), var(--slime)); transition: width .28s ease; }
+    .sample-dock { display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); gap: 5px; margin: 0 0 16px; }
+    .sample-dot { height: 24px; border: 1px solid rgba(245,240,216,.13); border-radius: 999px; background: rgba(245,240,216,.055); cursor: pointer; transition: transform .18s ease, background .18s ease, box-shadow .18s ease; }
+    .sample-dot.done { background: linear-gradient(135deg, var(--hot), var(--acid)); box-shadow: 0 0 18px rgba(215,255,54,.14); }
+    .sample-dot.active { transform: translateY(-3px) scale(1.08); border-color: var(--acid); box-shadow: 0 0 0 4px rgba(215,255,54,.08); }
+    .quiz-hud { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; color: var(--muted); font: 900 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .quiz-hud span { padding: 7px 9px; border: 1px solid rgba(245,240,216,.11); border-radius: 999px; background: rgba(245,240,216,.045); }
+    .quiz-hud b { color: var(--acid); }
+    .question { margin-bottom: 18px; font-size: clamp(28px, 3.3vw, 42px); line-height: 1.08; letter-spacing: -.065em; }
+    .choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .choice {
+      position: relative;
+      width: 100%;
+      min-height: 128px;
+      padding: 18px 16px 16px 52px;
+      color: var(--ink);
+      text-align: left;
+      border: 2px solid transparent;
+      border-radius: 24px 16px 26px 14px;
+      background: rgba(245, 240, 216, .07);
+      cursor: pointer;
+      transition: .18s ease;
+      overflow: hidden;
+    }
+    .choice::before { content: attr(data-hotkey); position: absolute; left: 14px; top: 16px; display: grid; place-items: center; width: 26px; height: 26px; color: #111; border-radius: 9px; background: var(--acid); font: 1000 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .choice::after { content: "hover.inspect_payload()"; position: absolute; right: 12px; bottom: 10px; color: rgba(215,255,54,.72); font: 900 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace; opacity: 0; transform: translateY(5px); transition: .18s ease; }
+    .choice:hover::after { opacity: 1; transform: translateY(0); }
+    .choice b { display: block; margin-bottom: 7px; font-size: clamp(16px, 1.4vw, 20px); line-height: 1.18; }
+    .choice small { color: var(--muted); font-weight: 820; line-height: 1.45; }
+    .choice.selected { border-color: var(--acid); background: rgba(215, 255, 54, .11); box-shadow: 0 0 0 5px rgba(215,255,54,.06); }
+    .quiz-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+    .result-card {
+      position: sticky;
+      top: 104px;
+      align-self: start;
+      padding: 20px;
+      border-radius: 34px 18px 40px 18px;
+      overflow: hidden;
+    }
+    .badge { display: inline-flex; margin-bottom: 12px; padding: 8px 12px; color: #111; font-size: 13px; font-weight: 1000; border-radius: 999px; background: var(--acid); }
+    .result-code { margin-bottom: 8px; color: var(--acid); font-size: clamp(54px, 5.6vw, 72px); line-height: .86; letter-spacing: -.11em; font-weight: 1000; text-shadow: 5px 0 0 rgba(255,79,154,.8); }
+    .result-name { margin-bottom: 10px; font-size: clamp(22px, 2.2vw, 27px); letter-spacing: -.05em; }
+    .result-desc { color: var(--muted); line-height: 1.62; font-size: 14px; font-weight: 790; }
+    .result-art {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 0;
+      margin: 14px 0;
+      border: 1px solid rgba(245,240,216,.12);
+      border-radius: 28px 16px 34px 18px;
+      background: #0a0a08;
+      overflow: hidden;
+    }
+    .result-art img { width: 100%; max-height: 340px; display: block; object-fit: contain; }
+    .generated-art {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: inherit;
+      object-fit: cover;
+      object-position: center;
+    }
+    .tiny-art .generated-art { height: 100%; object-fit: contain; }
+    .modal-art .generated-art, .result-art .generated-art { height: auto; }
+    .portrait-label { font-weight: 1000; letter-spacing: -.06em; }
+    .trait-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; margin-top: 14px; }
+    .trait { display: grid; gap: 7px; color: var(--muted); font-size: 12px; font-weight: 1000; }
+    .result-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+    .result-actions .cta, .result-actions .ghost { width: 100%; padding-inline: 12px; }
+    .trait span { display: flex; justify-content: space-between; }
+    .trait i { height: 9px; overflow: hidden; border-radius: 99px; background: rgba(245,240,216,.1); }
+    .trait i::before { content: ""; display: block; width: var(--value); height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--hot), var(--acid)); }
+
+    .result-card { perspective: 1200px; transform-style: preserve-3d; transition: transform .18s ease, box-shadow .22s ease; }
+    .result-flipper { position: relative; min-height: 100%; transform-style: preserve-3d; transition: transform .72s cubic-bezier(.2,.8,.12,1); }
+    .result-card.flipped .result-flipper { transform: rotateY(180deg); }
+    .result-face { backface-visibility: hidden; transform-style: preserve-3d; }
+    .result-back {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      align-content: start;
+      gap: 12px;
+      padding: 20px;
+      border-radius: inherit;
+      background:
+        linear-gradient(135deg, rgba(5,8,6,.94), rgba(20,14,22,.92)),
+        repeating-linear-gradient(0deg, transparent 0 13px, rgba(215,255,54,.04) 13px 14px);
+      border: 1px solid rgba(215,255,54,.18);
+      transform: rotateY(180deg);
+      overflow: hidden;
+    }
+    .result-back h3 { margin: 0; color: var(--acid); font-size: 30px; letter-spacing: -.06em; }
+    .result-back pre { margin: 0; white-space: pre-wrap; color: #a7f3a4; font: 850 12px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .result-flip-btn { grid-column: 1 / -1; margin-top: 4px; }
+    .result-code { position: relative; display: inline-block; }
+    .result-card.glitching .result-code, .modal-panel.glitching #modalCode { animation: codeGlitch .72s steps(2, end) both; }
+    .result-card.glitching .result-code::before, .result-card.glitching .result-code::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+    .result-card.glitching .result-code::before { color: var(--hot); transform: translate(4px, -2px); clip-path: inset(0 0 52% 0); }
+    .result-card.glitching .result-code::after { color: var(--slime); transform: translate(-3px, 2px); clip-path: inset(47% 0 0 0); }
+    @keyframes codeGlitch {
+      0% { filter: blur(5px); transform: skewX(-10deg) translateX(-4px); opacity: .2; }
+      20% { filter: blur(0); transform: skewX(8deg) translateX(5px); opacity: 1; }
+      42% { transform: translateX(-3px); text-shadow: -6px 0 0 var(--hot), 5px 0 0 var(--slime); }
+      72% { transform: translateX(2px); text-shadow: 8px 0 0 rgba(255,79,154,.8), -6px 0 0 rgba(116,255,121,.8); }
+      100% { transform: none; filter: none; }
+    }
+    .particle-burst { position: absolute; inset: 0; z-index: 8; pointer-events: none; overflow: hidden; }
+    .particle-burst i {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      color: var(--acid);
+      font: 1000 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      text-shadow: 0 0 14px rgba(215,255,54,.55);
+      animation: particlePop .92s cubic-bezier(.16,.84,.22,1) forwards;
+      transform: translate(-50%, -50%);
+    }
+    @keyframes particlePop {
+      to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--rot)) scale(.2); opacity: 0; filter: blur(2px); }
+    }
+
+    .prediction-box {
+      margin: -4px 0 18px;
+      padding: 12px;
+      border: 1px solid rgba(215,255,54,.16);
+      border-radius: 20px 12px 22px 10px;
+      background: rgba(5,8,6,.5);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .prediction-head { display: flex; justify-content: space-between; gap: 10px; color: var(--muted); font: 1000 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .prediction-head b { color: var(--acid); }
+    .prediction-bars { display: grid; gap: 7px; margin-top: 10px; }
+    .prediction-row { display: grid; grid-template-columns: 54px 1fr 38px; gap: 8px; align-items: center; color: var(--muted); font: 900 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .prediction-row em { color: var(--ink); font-style: normal; }
+    .prediction-row i { height: 8px; border-radius: 999px; background: rgba(245,240,216,.09); overflow: hidden; }
+    .prediction-row i::before { content: ""; display: block; width: var(--p); height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--hot), var(--acid)); }
+
+    .type-card {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 10px;
+      min-height: 0;
+      padding: 12px;
+      border-radius: 30px 16px 34px 14px;
+      overflow: hidden;
+      transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+    }
+    .type-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background:
+        linear-gradient(180deg, rgba(215,255,54,.08), transparent 34%),
+        radial-gradient(circle at 80% 4%, rgba(255,79,154,.12), transparent 34%);
+      opacity: .72;
+      pointer-events: none;
+    }
+    .type-card:nth-child(2n) { transform: rotate(.35deg); }
+    .type-card:nth-child(3n) { transform: rotate(-.35deg); }
+    .type-card h3 { position: relative; z-index: 2; margin: 2px 4px 0; color: var(--ink); font-size: 22px; line-height: 1.12; letter-spacing: -.045em; }
+    .type-card p {
+      position: relative;
+      z-index: 2;
+      min-height: 58px;
+      margin: 0 4px 2px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .type-code {
+      position: absolute;
+      left: 22px;
+      top: 22px;
+      z-index: 4;
+      display: inline-grid;
+      place-items: center;
+      min-width: 74px;
+      height: 38px;
+      width: fit-content;
+      margin: 0;
+      padding: 0 10px;
+      color: #111;
+      font-weight: 1000;
+      border-radius: 12px;
+      background: var(--acid);
+      box-shadow: 0 0 24px rgba(215,255,54,.28);
+      letter-spacing: -.04em;
+    }
+    .tiny-art {
+      position: relative;
+      z-index: 1;
+      order: -1;
+      width: 100%;
+      aspect-ratio: 418 / 470;
+      margin: 0 0 8px;
+      border-radius: 22px 12px 26px 12px;
+      overflow: hidden;
+      opacity: 1;
+      background: radial-gradient(circle at 50% 30%, rgba(215,255,54,.08), #0a0a08 62%);
+      box-shadow: inset 0 0 0 1px rgba(245,240,216,.1), 0 16px 40px rgba(0,0,0,.28);
+    }
+    .tiny-art::after {
+      content: "click.zoom()";
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      z-index: 2;
+      padding: 5px 8px;
+      color: #111;
+      border-radius: 999px;
+      background: rgba(215,255,54,.92);
+      font: 1000 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: .22s ease;
+    }
+    .type-card, .result-art, .tiny-art { isolation: isolate; }
+    .type-card::after {
+      content: "hover.inspect()";
+      position: absolute;
+      right: 14px;
+      bottom: 12px;
+      z-index: 3;
+      padding: 6px 9px;
+      color: #111;
+      font: 900 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      border-radius: 999px;
+      background: var(--acid);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: .22s ease;
+    }
+    .type-card:hover {
+      transform: translateY(-8px) rotate(0deg);
+      border-color: rgba(215, 255, 54, .54);
+      box-shadow: 0 0 0 1px rgba(215,255,54,.18), 0 34px 96px rgba(0,0,0,.64), 0 0 70px rgba(215,255,54,.08);
+    }
+    .type-card:hover::after, .type-card:hover .tiny-art::after { opacity: 1; transform: translateY(0); }
+    .type-card:hover .generated-art, .result-art:hover .generated-art { transform: scale(1.07) rotate(-.6deg); filter: contrast(1.08) saturate(1.18); }
+    .generated-art { transition: transform .32s ease, filter .32s ease; cursor: zoom-in; }
+
+    .dev-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 22px;
+    }
+    .dev-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 11px;
+      color: var(--muted);
+      font: 900 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      border: 1px solid rgba(245,240,216,.12);
+      border-radius: 999px;
+      background: rgba(245,240,216,.045);
+    }
+    .dev-chip strong { color: var(--acid); }
+    .dev-chip::before { content: "●"; color: var(--hot); font-size: 9px; }
+
+    .code-watermark {
+      position: absolute;
+      z-index: 0;
+      color: rgba(245,240,216,.045);
+      font: 1000 clamp(42px, 7vw, 96px)/.86 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: -.09em;
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+      transform: rotate(-6deg);
+    }
+    .code-watermark.hot { color: rgba(255,79,154,.08); text-shadow: 0 0 34px rgba(255,79,154,.08); }
+    .code-watermark.acid { color: rgba(215,255,54,.075); text-shadow: 0 0 34px rgba(215,255,54,.08); }
+    .quiz-panel .code-watermark:nth-of-type(1) { right: -36px; top: 22px; }
+    .quiz-panel .code-watermark:nth-of-type(2) { left: 18px; bottom: 108px; font-size: clamp(34px, 5vw, 76px); transform: rotate(3deg); }
+    .result-card .code-watermark { right: -44px; top: 92px; font-size: clamp(50px, 6vw, 84px); }
+    .code-ribbon { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; }
+    .code-ribbon span { padding: 7px 9px; border: 1px solid rgba(215,255,54,.16); border-radius: 999px; color: rgba(245,240,216,.74); background: rgba(5,8,6,.56); font: 900 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .code-ribbon b { color: var(--acid); }
+
+    .pipeline {
+      margin-top: 18px;
+      padding: 14px;
+      border: 1px solid rgba(116,255,121,.18);
+      border-radius: 22px 14px 24px 12px;
+      background: rgba(5, 8, 6, .72);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .pipeline-head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 10px; color: var(--acid); font-size: 12px; font-weight: 1000; }
+    .pipeline-log { display: grid; gap: 6px; color: #a7f3a4; font-size: 12px; line-height: 1.45; max-height: 188px; overflow: hidden; }
+    .pipeline-log div { position: relative; padding-left: 2px; animation: terminalIn .22s ease both; }
+    .pipeline-log div::after { content: ""; display: inline-block; width: 7px; height: 1em; margin-left: 4px; background: rgba(215,255,54,.72); vertical-align: -.18em; animation: cursorBlink 1s steps(2,end) infinite; }
+    .pipeline-log span { color: rgba(245,240,216,.58); }
+    .pipeline-log b { color: var(--hot); }
+    .pipeline-log code { color: var(--acid); font: inherit; }
+    @keyframes terminalIn { from { opacity: 0; transform: translateY(4px); filter: blur(2px); } to { opacity: 1; transform: none; filter: none; } }
+    @keyframes cursorBlink { 50% { opacity: 0; } }
+
+    .answer-flash { animation: flash .34s ease; }
+    @keyframes flash {
+      0% { box-shadow: 0 0 0 0 rgba(215,255,54,.0); }
+      45% { box-shadow: 0 0 0 7px rgba(215,255,54,.16); }
+      100% { box-shadow: 0 0 0 0 rgba(215,255,54,.0); }
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      background: rgba(4, 5, 4, .74);
+      backdrop-filter: blur(16px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .22s ease;
+    }
+    .modal-backdrop.show { opacity: 1; pointer-events: auto; }
+    .modal-panel {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(280px, 440px) minmax(280px, 420px);
+      gap: 22px;
+      width: min(930px, 100%);
+      max-height: min(880px, calc(100vh - 40px));
+      overflow: auto;
+      padding: 22px;
+      border: 1px solid rgba(215,255,54,.28);
+      border-radius: 34px 18px 40px 18px;
+      background: linear-gradient(135deg, #11120e, #181812 56%, #10100e);
+      box-shadow: 0 40px 110px rgba(0,0,0,.72), 0 0 0 10px rgba(215,255,54,.04);
+      transform: translateY(18px) scale(.98);
+      transition: transform .22s ease;
+    }
+    .modal-backdrop.show .modal-panel { transform: translateY(0) scale(1); }
+    .modal-close {
+      position: absolute;
+      right: 14px;
+      top: 14px;
+      z-index: 2;
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(245,240,216,.14);
+      border-radius: 50%;
+      color: var(--ink);
+      background: rgba(245,240,216,.08);
+      cursor: pointer;
+      font-weight: 1000;
+    }
+    .modal-art { position: relative; border-radius: 26px 14px 30px 14px; overflow: hidden; background: #0a0a08; }
+    .modal-art img { width: 100%; display: block; }
+    .modal-copy { align-self: center; padding-right: 28px; }
+    .modal-copy .badge { margin-bottom: 16px; }
+    .modal-copy h2 { margin-bottom: 12px; color: var(--acid); font-size: clamp(42px, 8vw, 88px); line-height: .84; letter-spacing: -.1em; text-shadow: 5px 0 0 rgba(255,79,154,.78); }
+    .modal-copy h3 { margin-bottom: 14px; font-size: clamp(26px, 4vw, 42px); letter-spacing: -.06em; }
+    .modal-copy p { color: var(--muted); line-height: 1.72; font-weight: 850; }
+    .modal-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+    .lightbox-panel {
+      position: relative;
+      width: min(720px, 100%);
+      padding: 12px;
+      border: 1px solid rgba(245,240,216,.16);
+      border-radius: 28px;
+      background: #0b0b09;
+      box-shadow: var(--shadow);
+    }
+    .lightbox-panel img { width: 100%; display: block; border-radius: 20px; }
+
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .showcase-card {
+      position: relative;
+      padding: 18px;
+      border: 1px solid rgba(245,240,216,.14);
+      border-radius: 28px 16px 32px 14px;
+      background: linear-gradient(135deg, rgba(245,240,216,.07), rgba(245,240,216,.025));
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .showcase-card::before {
+      content: attr(data-label);
+      display: inline-flex;
+      margin-bottom: 12px;
+      padding: 6px 10px;
+      color: #111;
+      border-radius: 999px;
+      background: var(--acid);
+      font: 1000 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .showcase-card h3 { margin-bottom: 8px; font-size: clamp(24px, 3vw, 36px); letter-spacing: -.06em; }
+    .showcase-card p { margin: 0; color: var(--muted); line-height: 1.65; font-weight: 850; }
+    .showcase-code {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 18px;
+      background: #080908;
+      color: #a7f3a4;
+      font: 850 12px/1.65 ui-monospace, SFMono-Regular, Menlo, monospace;
+      overflow: hidden;
+    }
+
+    .mood-stage {
+      padding-top: 72px;
+      overflow: hidden;
+    }
+    .mood-lab {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(320px, .72fr) minmax(460px, 1.28fr);
+      gap: 28px;
+      align-items: center;
+      min-height: 760px;
+      padding: clamp(20px, 4vw, 44px);
+      border: 1px solid rgba(215,255,54,.18);
+      border-radius: 46px 22px 52px 18px;
+      background:
+        radial-gradient(circle at 80% 12%, rgba(215,255,54,.12), transparent 24rem),
+        linear-gradient(135deg, rgba(245,240,216,.07), rgba(245,240,216,.025));
+      box-shadow: var(--shadow);
+      perspective: 1400px;
+    }
+    .mood-copy h2 {
+      margin-bottom: 16px;
+      font-size: clamp(42px, 7vw, 92px);
+      line-height: .9;
+      letter-spacing: -.09em;
+    }
+    .mood-copy p { color: var(--muted); font-size: clamp(16px, 2vw, 20px); line-height: 1.75; font-weight: 850; }
+    .signature-card {
+      margin-top: 24px;
+      padding: 18px;
+      border: 1px solid rgba(245,240,216,.14);
+      border-radius: 26px 14px 30px 14px;
+      background: rgba(6,7,5,.78);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 20px 48px rgba(0,0,0,.28);
+    }
+    body.light .signature-card { background: rgba(255,255,246,.72); }
+    .signature-card .sig-code { color: var(--acid); font: 1000 38px/.9 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: -.08em; }
+    .signature-card .sig-name { margin: 8px 0 12px; font-size: 22px; font-weight: 1000; }
+    .signature-card .sig-text { color: var(--ink); font-size: 18px; line-height: 1.65; font-weight: 900; }
+    .signature-card .sig-meta { margin-top: 12px; color: var(--muted); font: 900 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .signature-card { position: relative; overflow: hidden; min-height: 286px; }
+    .signature-card::before {
+      content: "left.panel.render(signature)";
+      position: absolute;
+      right: 14px;
+      top: 12px;
+      color: rgba(215,255,54,.18);
+      font: 1000 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      pointer-events: none;
+    }
+    .signature-card.pulse { animation: sigPulse .46s ease; }
+    .sig-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 14px; }
+    .sig-actions span { color: var(--muted); font: 850 11px/1.35 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .sig-reroll {
+      border: 1px solid rgba(215,255,54,.28);
+      border-radius: 999px;
+      padding: 8px 11px;
+      color: var(--ink);
+      background: rgba(215,255,54,.1);
+      font: 1000 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      cursor: pointer;
+    }
+    .sig-reroll:hover { transform: translateY(-1px); background: rgba(215,255,54,.18); }
+    @keyframes sigPulse {
+      0% { box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 20px 48px rgba(0,0,0,.28); transform: translateY(0); }
+      45% { box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 26px 70px rgba(215,255,54,.18); transform: translateY(-2px); }
+      100% { box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 20px 48px rgba(0,0,0,.28); transform: translateY(0); }
+    }
+    .mood-orbit {
+      --tiltX: -7deg;
+      --tiltY: 0deg;
+      position: relative;
+      height: clamp(520px, 48vw, 680px);
+      min-height: 520px;
+      transform-style: preserve-3d;
+      transform: rotateX(var(--tiltX)) rotateY(var(--tiltY));
+      transition: transform .12s ease-out;
+      cursor: grab;
+    }
+    .mood-orbit:active { cursor: grabbing; }
+    .mood-orbit.cooldown { cursor: default; }
+    .mood-orbit.cooldown .mood-card { cursor: pointer; }
+    .mood-orbit::before {
+      content: "inertia.ring.force()";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: min(74%, 640px);
+      aspect-ratio: 1;
+      border: 1px dashed rgba(215,255,54,.22);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) rotateX(82deg);
+      box-shadow: 0 0 60px rgba(215,255,54,.06), inset 0 0 38px rgba(255,79,154,.04);
+      pointer-events: none;
+    }
+    .mood-orbit::after {
+      content: "front.card.lock()";
+      position: absolute;
+      left: 50%;
+      bottom: 22px;
+      z-index: 40;
+      padding: 7px 10px;
+      color: #111;
+      border-radius: 999px;
+      background: var(--acid);
+      font: 1000 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      transform: translateX(-50%);
+      box-shadow: 0 0 28px rgba(215,255,54,.2);
+      pointer-events: none;
+    }
+    .mood-orbit.cooldown::after { content: "hover.force.locked(5s)"; background: #ff4f9a; color: #fff7df; }
+
+    .mood-card {
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      width: clamp(118px, 13vw, 188px);
+      aspect-ratio: 418 / 470;
+      border: 1px solid rgba(245,240,216,.18);
+      border-radius: 20px 10px 24px 10px;
+      background: #0a0a08;
+      overflow: hidden;
+      box-shadow: 0 22px 58px rgba(0,0,0,.38);
+      cursor: pointer;
+      transform-style: preserve-3d;
+      transform-origin: center;
+      will-change: transform, filter, opacity;
+      transition: filter .18s ease, opacity .18s ease, box-shadow .18s ease;
+    }
+    .mood-card img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .mood-card span {
+      position: absolute;
+      left: 8px;
+      top: 8px;
+      padding: 5px 8px;
+      color: #111;
+      border-radius: 999px;
+      background: var(--acid);
+      font: 1000 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      box-shadow: 0 0 18px rgba(215,255,54,.28);
+    }
+    .mood-card.active {
+      z-index: 60;
+      filter: saturate(1.26) contrast(1.12);
+      box-shadow: 0 34px 90px rgba(0,0,0,.58), 0 0 0 2px rgba(215,255,54,.7), 0 0 90px rgba(215,255,54,.18);
+    }
+    .mood-card:hover { filter: saturate(1.35) contrast(1.12); }
+    .mood-controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: -28px; }
+    .mood-force { position: relative; z-index: 5; box-shadow: 0 18px 50px rgba(215,255,54,.14); }
+    .mood-hint {
+      position: absolute;
+      right: 26px;
+      bottom: 24px;
+      padding: 8px 11px;
+      color: #111;
+      border-radius: 999px;
+      background: var(--acid);
+      font: 1000 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+
+
+    .shared-view {
+      display: none;
+      padding-top: 52px;
+    }
+    body.shared-mode .shared-view { display: block; }
+    .shared-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(280px, .9fr) minmax(320px, 1.1fr);
+      gap: clamp(20px, 4vw, 48px);
+      align-items: center;
+      padding: clamp(22px, 5vw, 56px);
+      border: 1px solid rgba(215,255,54,.22);
+      border-radius: 48px 20px 56px 18px;
+      background:
+        radial-gradient(circle at 12% 20%, rgba(255,79,154,.16), transparent 23rem),
+        radial-gradient(circle at 82% 22%, rgba(215,255,54,.15), transparent 28rem),
+        linear-gradient(135deg, rgba(245,240,216,.075), rgba(245,240,216,.025));
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .shared-card::before {
+      content: "share.payload.decode()";
+      position: absolute;
+      right: 24px;
+      top: 20px;
+      color: rgba(215,255,54,.58);
+      font: 1000 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .shared-art {
+      border-radius: 34px 16px 40px 14px;
+      overflow: hidden;
+      background: #0a0a08;
+      box-shadow: 0 28px 80px rgba(0,0,0,.48), 0 0 0 1px rgba(245,240,216,.12);
+      transform: rotate(-2deg);
+    }
+    .shared-art img { width: 100%; display: block; }
+    .shared-copy h2 {
+      margin: 8px 0 12px;
+      color: var(--acid);
+      font-size: clamp(64px, 10vw, 132px);
+      line-height: .8;
+      letter-spacing: -.12em;
+      text-shadow: 7px 0 0 rgba(255,79,154,.82);
+    }
+    .shared-copy h3 { margin-bottom: 18px; font-size: clamp(28px, 4vw, 54px); line-height: .96; letter-spacing: -.07em; }
+    .shared-copy p { color: var(--muted); font-size: clamp(16px, 1.9vw, 21px); line-height: 1.75; font-weight: 880; }
+    .shared-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+    .shared-note {
+      margin-top: 18px;
+      color: rgba(245,240,216,.56);
+      font: 900 12px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .share-strip {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+      margin-bottom: 72px;
+      padding: 30px;
+      color: #111;
+      border-radius: 36px 18px 42px 16px;
+      background: var(--acid);
+      box-shadow: 16px 16px 0 rgba(255,79,154,.76), var(--shadow);
+      transform: rotate(-.6deg);
+    }
+    .share-strip h2 { margin-bottom: 8px; font-size: clamp(30px, 4.6vw, 58px); line-height: 1; letter-spacing: -.075em; }
+    .share-strip p { margin: 0; color: rgba(17,17,17,.72); font-weight: 900; line-height: 1.6; }
+    .share-strip .cta { color: var(--ink); background: #111; box-shadow: none; }
+    footer { padding: 34px 0 54px; color: var(--muted); text-align: center; font-size: 14px; font-weight: 850; }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      z-index: 80;
+      padding: 12px 16px;
+      color: #111;
+      border-radius: 999px;
+      background: var(--acid);
+      opacity: 0;
+      transform: translate(-50%, 12px);
+      pointer-events: none;
+      transition: .25s ease;
+      font-weight: 1000;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    @media (max-width: 980px) {
+      .modal-panel { grid-template-columns: 1fr; }
+      .modal-copy { padding-right: 0; }
+      .hero, .quiz-layout, .showcase-grid, .mood-lab, .shared-card { grid-template-columns: 1fr; }
+      .choices { grid-template-columns: 1fr; }
+      .mood-orbit { height: 620px; }
+      .hero { min-height: auto; }
+      .hero-art { min-height: 560px; }
+      .result-card { position: relative; top: auto; }
+      .feature-grid, .types { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 700px) {
+      .shell { width: min(100% - 24px, 1180px); }
+      .topbar { align-items: stretch; border-radius: 26px; flex-direction: column; }
+      .nav { justify-content: space-between; overflow-x: auto; }
+      .hero { padding-top: 38px; }
+      .hero-art { min-height: 470px; }
+      .poster { inset: 20px 0 auto 0; min-height: 420px; }
+      .microstats, .feature-grid, .types, .share-strip { grid-template-columns: 1fr; }
+      .mood-orbit { height: 560px; min-height: 520px; }
+      .section-head { display: block; }
+      .sticker strong { font-size: 42px; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="codeRain" class="code-rain-canvas" aria-hidden="true"></canvas>
+  <header class="topbar shell">
+    <a class="brand" href="#top" aria-label="SBIT 恶臭程序员人格测试首页">
+      <span class="logo">臭</span>
+      <span>SBIT.bad</span>
+    </a>
+    <nav class="nav" aria-label="主导航">
+      <a href="#how">气味说明</a>
+      <a href="#quiz">开始发烂</a>
+      <a href="#mood">今日情绪</a>
+      <a href="#lab">研发看板</a>
+      <a href="#types">物种图鉴</a>
+      <a href="#share">转发污染</a>
+      <button id="themeToggle" class="theme-toggle" type="button">dark()</button>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero shell">
+      <div>
+        <div class="eyebrow">🪰 给精神离职但还在打卡的人</div>
+        <h1 class="hero-title">测测你的<span>职场馊味</span></h1>
+        <p class="lead">这不是 MBTI，也不假装科学。SBIT 是一套给年轻程序员的恶臭人格测试：摸鱼、装忙、带薪拉屎、反抗、认命、阴阳怪气——把你上班时那股“我还没疯但也快了”的味儿编码成 4 个字母。</p>
+        <div class="code-ribbon" aria-label="伪代码宣言">
+          <span>if (<b>work</b>.meaning === null) return <b>moyu()</b></span>
+          <span>try { pretendBusy() } catch { <b>toilet.hide()</b> }</span>
+          <span>git commit -m "fix: 我本人"</span>
+        </div>
+        <div class="dev-strip" aria-label="研发状态标签">
+          <span class="dev-chip"><strong>env</strong>=prod-but-pretend-dev</span>
+          <span class="dev-chip"><strong>smellLint</strong>=warning</span>
+          <span class="dev-chip"><strong>deploy</strong>=周五禁止</span>
+          <span class="dev-chip"><strong>cache</strong>=灵魂未命中</span>
+        </div>
+        <div class="hero-actions">
+          <a class="cta" href="#quiz">开始污染样本 →</a>
+          <a class="ghost" href="#types">先偷看物种</a>
+        </div>
+        <div class="microstats" aria-label="测试特点">
+          <div class="stat"><b>16</b><small>道低能但真实的上班场景</small></div>
+          <div class="stat"><b>16</b><small>种抽象职场恶臭物种</small></div>
+          <div class="stat"><b>-1</b><small>点正能量，刚好够活</small></div>
+        </div>
+      </div>
+
+      <div class="hero-art" aria-hidden="true">
+        <div class="poster">
+          <div class="terminal">
+            <strong>~/corpseware $ npm run pretend</strong>
+            <div class="line" style="--w:82%;--c:#d7ff36"></div>
+            <div class="line" style="--w:39%;--c:#ff4f9a"></div>
+            <div class="line" style="--w:67%;--c:#8270ff"></div>
+            <div class="line" style="--w:91%;--c:#74ff79"></div>
+            <div class="line" style="--w:48%;--c:#ff7b2f"></div>
+          </div>
+        </div>
+        <div class="abstract-hero" role="img" aria-label="IMFW 我是废物 生成图片"></div>
+        <div class="sticker"><strong>MOYU?</strong><span>你不是不努力，你只是把努力外包给了状态栏和鼠标微动。</span></div>
+      </div>
+    </section>
+
+    <section id="sharedView" class="shared-view shell" aria-label="分享结果查看页">
+      <div class="shared-card">
+        <div id="sharedArt" class="shared-art"></div>
+        <div class="shared-copy">
+          <div class="eyebrow">🧬 friend.result.imported · no questionnaire yet</div>
+          <h2 id="sharedCode">SBIT</h2>
+          <h3 id="sharedName">朋友发来的恶臭人格</h3>
+          <p id="sharedDesc">这是一份分享结果。</p>
+          <div class="shared-actions">
+            <button id="sharedStartBtn" class="cta" type="button">我也要采样 →</button>
+            <a class="ghost" href="#types">偷看全部物种</a>
+          </div>
+          <div class="shared-note">GET /sbit?result=<span id="sharedRouteCode">SBIT</span> · 这里只负责看朋友结果，真正的精神污染请从采样开始。</div>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="how" class="shell">
+      <div class="section-head">
+        <h2>不是人格类型，是工位污染源鉴定报告。</h2>
+        <p>结果不再复刻传统人格卡，而是给每种恶臭程序员生成一张原创动漫抽象场景：埋头敲键盘、带薪拉屎打游戏、PPT 汇报、工单囚笼、死线诈尸。</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature"><div class="icon">🪑</div><h3>摸鱼维度</h3><p>不是懒，是在资本主义水族箱里练习低功耗生存。</p></article>
+        <article class="feature"><div class="icon">🎭</div><h3>装忙浓度</h3><p>键盘敲得越响，灵魂离工位越远。会议头像永远在线。</p></article>
+        <article class="feature"><div class="icon">🚽</div><h3>带薪厕所学</h3><p>卫生间不是逃避，是员工唯一还没被 Jira 管理的冥想室。</p></article>
+        <article class="feature"><div class="icon">🧨</div><h3>反骨指数</h3><p>嘴上“收到”，心里已经把整个组织架构 rm -rf 了。</p></article>
+      </div>
+    </section>
+
+    <section id="quiz" class="shell">
+      <div class="section-head">
+        <h2>开始恶臭采样</h2>
+        <p>选择最像你上班时真实生理反应的一项。每次点击都会写入一条精神日志，最后把你的工位异常栈压缩成 4 个字母。</p>
+      </div>
+      <div class="quiz-layout">
+        <div class="quiz-panel">
+          <div class="code-watermark acid">while(true)</div>
+          <div class="code-watermark hot">return null</div>
+          <div class="progress-row">
+            <span id="stepText">第 1 / 16 题</span>
+            <div class="progress"><div id="progressBar" class="bar"></div></div>
+          </div>
+          <div id="sampleDock" class="sample-dock" aria-label="16 题采样进度"></div>
+          <div class="quiz-hud" aria-label="恶臭采样运行状态">
+            <span>entropy=<b id="entropyText">0%</b></span>
+            <span>hotkeys=<b>1/2/3/4</b></span>
+            <span>render=<b id="renderText">idle</b></span>
+          </div>
+          <div class="prediction-box" aria-live="polite">
+            <div class="prediction-head"><span>人格预判 · smellnet.watch()</span><b id="predictionCode">SBIT ??%</b></div>
+            <div id="predictionBars" class="prediction-bars"></div>
+          </div>
+          <h2 id="question" class="question"></h2>
+          <div id="choices" class="choices"></div>
+          <div class="quiz-actions">
+            <button id="prevBtn" class="ghost" type="button">上一题</button>
+            <button id="nextBtn" class="cta" type="button">下一题</button>
+            <button id="resetBtn" class="ghost" type="button">清空罪证</button>
+          </div>
+          <div class="pipeline" aria-live="polite">
+            <div class="pipeline-head"><span>SBIT_PIPELINE</span><span id="pipelineStatus">awaiting input</span></div>
+            <div id="pipelineLog" class="pipeline-log">
+              <div><span>$</span> boot smell-runtime --mode=anti-productivity</div>
+              <div><span>$</span> waiting for user sample...</div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="result-card" aria-live="polite">
+          <div id="resultFlipper" class="result-flipper">
+            <div class="result-face result-front">
+              <div class="code-watermark acid">const smell</div>
+              <div class="badge">你的馊味编码</div>
+              <div id="resultCode" class="result-code" data-text="SBIT">SBIT</div>
+              <h3 id="resultName" class="result-name">正在腐烂中</h3>
+              <p id="resultDesc" class="result-desc">答完题会生成一张原创动漫抽象图。它不治愈，只负责把你的工位气味具象化。</p>
+              <div id="resultArt" class="result-art"></div>
+              <div id="traits" class="trait-list"></div>
+              <div class="result-actions">
+                <button id="copyBtn" class="ghost" type="button">复制诊断</button>
+                <button id="shareBtn" class="cta" type="button">分享链接</button>
+                <button id="resultFlipBtn" class="ghost result-flip-btn" type="button">翻到背面看异常栈</button>
+              </div>
+            </div>
+            <div class="result-face result-back" aria-label="结果卡背面异常栈">
+              <h3 id="resultBackTitle">stack.trace()</h3>
+              <pre id="resultBackLog">等待采样中...
+Error: smell vector is empty
+    at workplace.compile(SBIT)
+    at human.pretendBusy()</pre>
+              <button id="resultBackBtn" class="cta" type="button">翻回正面 →</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="mood" class="mood-stage shell">
+      <div class="mood-lab">
+        <div class="mood-copy">
+          <div class="eyebrow">🎛️ 今日上班情绪选择器 · force / inertia / damping</div>
+          <h2>请选择你的今日上班情绪。</h2>
+          <p>16 张恶臭人格图绕成一个 3D 环。轻扫会给转盘一点点“力”，点击任意卡片会把左侧签名立即切到对应人格；随机按钮会自动旋转多圈，定格后 5 秒进入只读观察期。</p>
+          <div class="signature-card" aria-live="polite">
+            <div id="sigCode" class="sig-code">IMFW</div>
+            <div id="sigName" class="sig-name">我是废物</div>
+            <div id="sigText" class="sig-text">今天的我不是低效，是正在进行人类降频维护。</div>
+            <div id="sigMeta" class="sig-meta">signature 1/1000 · card.click() =&gt; left.panel.render()</div>
+            <div class="sig-actions">
+              <button id="sigRerollBtn" class="sig-reroll" type="button">再来一句丧话</button>
+              <span>hover.force *= 0.42 · settle.lock(5s)</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div id="moodOrbit" class="mood-orbit" aria-label="今日上班情绪 3D 惯性环形转盘"></div>
+          <div class="mood-controls">
+            <button id="moodImpulseBtn" class="cta mood-force" type="button">随机施加一坨力 →</button>
+          </div>
+        </div>
+        <div class="mood-hint">move.speed → force · friction → settle</div>
+      </div>
+    </section>
+
+    <section id="lab" class="shell">
+      <div class="section-head">
+        <h2>从采样到出图，像跑了一次精神构建。</h2>
+        <p>这里保留实时采样、类型推断、结果弹窗、图片预览、键盘快捷键和结果 URL 序列化；不再强制吸附滚动，浏览节奏交给你自己。</p>
+      </div>
+      <div class="showcase-grid">
+        <article class="showcase-card" data-label="runtime.trace">
+          <h3>每一次选择都是一次脏提交。</h3>
+          <p>答题时右侧结果和采样终端会实时更新，最后一题自动触发结果弹窗，相当于 `postAnswerHook -> buildResultModal()`。</p>
+          <div class="showcase-code">
+            <div>$ pnpm smell:test --sample=16/16</div>
+            <div>$ infer-type --model=workplace-trashnet</div>
+            <div>$ emit card --format=png --shareable=true</div>
+            <div>$ serialize result --query=?result=MEET</div>
+          </div>
+        </article>
+        <article class="showcase-card" data-label="interaction.spec">
+          <h3>交互不是装饰，是让吐槽更像工具。</h3>
+          <p>图片支持点击放大，图鉴支持 hover.inspect，`Esc` 关闭弹窗，答完后 `Enter` 可重新打开诊断结果。</p>
+          <div class="showcase-code">
+            <div>hover.card =&gt; inspect()</div>
+            <div>click.image =&gt; zoom()</div>
+            <div>last.answer =&gt; modal.open()</div>
+            <div>share.link =&gt; direct.result()</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="types" class="shell">
+      <div class="section-head">
+        <h2>16 种恶臭程序员短词</h2>
+        <p>每个结果都有一个原创短词、中文称号、稀有度百分比和一幅 AI 生成的对应场景图。不照抄参考站，只借那种荒诞命名的精神。</p>
+      </div>
+      <div id="typeGrid" class="types"></div>
+    </section>
+
+    <section id="share" class="shell">
+      <div class="share-strip">
+        <div>
+          <h2>转发到群里，看看谁还在假装热爱工作。</h2>
+          <p>纯前端单文件，无后端，无登录，无 KPI。唯一的风险是同事看完觉得太准。</p>
+        </div>
+        <a class="cta" href="#quiz">继续污染</a>
+      </div>
+    </section>
+  </main>
+
+  <div id="resultModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalCode">
+    <div class="modal-panel">
+      <button id="resultModalClose" class="modal-close" type="button" aria-label="关闭结果弹窗">×</button>
+      <div id="modalArt" class="modal-art"></div>
+      <div class="modal-copy">
+        <div class="badge">CI 已完成：恶臭构建成功</div>
+        <h2 id="modalCode">SBIT</h2>
+        <h3 id="modalName">正在发臭</h3>
+        <p id="modalDesc">结果生成中。</p>
+        <div class="modal-actions">
+          <button id="modalCopyBtn" class="ghost" type="button">复制诊断</button>
+          <button id="modalShareBtn" class="cta" type="button">复制分享链接</button>
+          <button id="modalRetestBtn" class="ghost" type="button">重新采样</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="imageModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="图片预览">
+    <div class="lightbox-panel">
+      <button id="imageModalClose" class="modal-close" type="button" aria-label="关闭图片预览">×</button>
+      <img id="imageModalImg" src="" alt="放大的恶臭程序员图片" />
+    </div>
+  </div>
+
+  <div id="eggModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="隐藏彩蛋">
+    <div class="lightbox-panel">
+      <button id="eggModalClose" class="modal-close" type="button" aria-label="关闭彩蛋">×</button>
+      <div class="showcase-code">
+        <div>$ sudo rm -rf /okr /pua /meaningless-meetings</div>
+        <div>permission denied: 社保 still mounted</div>
+        <div>achievement unlocked: 摸鱼架构师</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="shell">SBIT.bad · Anti-productivity personality trash test · 结果纯娱乐，恶臭请自理</footer>
+  <div id="toast" class="toast">已复制</div>
+
+  <script>
+    const questions = [
+      {
+        text: "早上打开电脑，你觉得自己更像什么？",
+        choices: [
+          { title: "一台欠费开机的肉体云服务器", note: "风扇响了，人没醒。", score: { M: 2, R: 1 } },
+          { title: "自动执行昨日痛苦的脚本", note: "不用思考，工单会替我思考。", score: { L: 2, R: 1 } },
+          { title: "在线状态模拟器", note: "头像亮着就是劳动关系。", score: { Z: 2, M: 1 } },
+          { title: "准备逃往厕所的可疑进程", note: "启动项：肠胃、手机、自由。", score: { D: 2, F: 1 } }
+        ]
+      },
+      {
+        text: "需求文档写着“简单做一下”，你闻到了什么？",
+        choices: [
+          { title: "三周排期的尸臭", note: "简单两个字通常不简单。", score: { S: 2, R: 1 } },
+          { title: "PPT 里冒出来的香精味", note: "先包装成价值，再塞给研发。", score: { Z: 2, J: 1 } },
+          { title: "我将成为背锅容器", note: "边界不清，锅很清。", score: { F: 2, S: 1 } },
+          { title: "先拖两天看它会不会死", note: "很多需求活不过周三。", score: { M: 2, D: 1 } }
+        ]
+      },
+      {
+        text: "领导问“有风险吗”，你的真实翻译是？",
+        choices: [
+          { title: "有，但你不想听", note: "我说完你会让我克服。", score: { S: 2, F: 1 } },
+          { title: "没有，直到上线那天有", note: "薛定谔的事故。", score: { R: 2, Z: 1 } },
+          { title: "风险就是我本人还没辞职", note: "人的稳定性是最大单点。", score: { F: 2, M: 1 } },
+          { title: "我会写进周报假装管理过", note: "风险闭环：写了等于没有。", score: { Z: 2, J: 1 } }
+        ]
+      },
+      {
+        text: "下午三点灵魂掉线，你会把自己移交给？",
+        choices: [
+          { title: "厕所隔间", note: "公司最后一块未被排期污染的圣地。", score: { D: 3 } },
+          { title: "技术文章收藏夹", note: "看标题就算学习，收藏就算精通。", score: { M: 2, Z: 1 } },
+          { title: "咖啡因和肌肉记忆", note: "人不在，手还会敲。", score: { L: 2, J: 1 } },
+          { title: "一个用来偷懒的自动化脚本", note: "懒不是缺陷，是架构思想。", score: { S: 2, F: 1 } }
+        ]
+      },
+      {
+        text: "祖传屎山突然报错，你的第一反应是？",
+        choices: [
+          { title: "先骂作者，再发现是我写的", note: "考古挖到自己的尸体。", score: { F: 1, L: 2 } },
+          { title: "绕开它，别惊醒古神", note: "屎山有生态，重构会塌方。", score: { M: 2, R: 1 } },
+          { title: "补日志，让它自己招供", note: "玄学问题先刑讯逼供。", score: { S: 2, L: 1 } },
+          { title: "截图发群求围观", note: "痛苦不分享就白痛了。", score: { D: 1, F: 2 } }
+        ]
+      },
+      {
+        text: "你最擅长的恶臭职场拟态是？",
+        choices: [
+          { title: "忙到冒烟但产物不可见", note: "高频动作，低维产出。", score: { Z: 3 } },
+          { title: "低调摸鱼但关键时刻救火", note: "摸鱼的劳模，薛定谔主力。", score: { M: 2, L: 1 } },
+          { title: "每句话都像离职倒计时", note: "但五险一金把我按住了。", score: { F: 2, R: 1 } },
+          { title: "看起来摆烂，其实全知道", note: "沉默不是无知，是懒得参战。", score: { S: 2, M: 1 } }
+        ]
+      },
+      {
+        text: "产品说“这个交互很小”，你脑内弹窗是？",
+        choices: [
+          { title: "小？那你自己写？", note: "反骨从括号里长出来。", score: { F: 2, S: 1 } },
+          { title: "又要改数据结构了", note: "小改动，大地震。", score: { S: 2, L: 1 } },
+          { title: "先答应，回去评估怎么拖", note: "缓冲区是成年人的尊严。", score: { M: 2, R: 1 } },
+          { title: "做一版能演示的幻觉", note: "Demo 不是产品，是魔术。", score: { Z: 2, J: 1 } }
+        ]
+      },
+      {
+        text: "下班前 10 分钟有人 @ 你，你的身体协议是？",
+        choices: [
+          { title: "进入已读不回保护模式", note: "通知也要遵守劳动法。", score: { M: 2, R: 1 } },
+          { title: "回一个表情包封印责任", note: "收到，但没完全收到。", score: { Z: 2, D: 1 } },
+          { title: "当场解决，防止梦里返场", note: "焦虑驱动开发。", score: { L: 2, J: 1 } },
+          { title: "问：为什么现在才说？", note: "一句话点燃流程废墟。", score: { F: 2, S: 1 } }
+        ]
+      },
+      {
+        text: "你对加班截图的态度是？",
+        choices: [
+          { title: "不截，痛苦不是朋友圈素材", note: "我只想消失。", score: { M: 2, R: 1 } },
+          { title: "截，苦劳需要证据链", note: "灯光、时钟、终端，缺一不可。", score: { J: 2, Z: 1 } },
+          { title: "先干完再骂", note: "专业素养和精神崩溃并存。", score: { L: 2, F: 1 } },
+          { title: "人在公司，脑子下线", note: "一种物理加班，精神旷工。", score: { D: 2, Z: 1 } }
+        ]
+      },
+      {
+        text: "你写 CRUD 后台时最大的感受是？",
+        choices: [
+          { title: "我是一台表单复读机", note: "增删改查，查改删增。", score: { L: 2, R: 2 } },
+          { title: "能不能自动生成后我去死一下", note: "重复劳动会污染人格。", score: { M: 2, F: 1 } },
+          { title: "字段名像产品随手撒的米", note: "命名不是沟通，是占卜。", score: { S: 2, F: 1 } },
+          { title: "截图进日报：完成核心能力建设", note: "把表格包装成平台化。", score: { Z: 2, J: 1 } }
+        ]
+      },
+      {
+        text: "周报里你最想使用的文学体裁是？",
+        choices: [
+          { title: "持续推进体", note: "什么都没说，但像干了很多。", score: { Z: 2, M: 1 } },
+          { title: "历史遗留受难体", note: "修 bug 像替前人还债。", score: { L: 2, R: 1 } },
+          { title: "效率优化自嗨体", note: "其实是为了更高级地偷懒。", score: { M: 2, S: 1 } },
+          { title: "流程风险阴阳体", note: "翻译：你们这样迟早出事。", score: { F: 2, S: 1 } }
+        ]
+      },
+      {
+        text: "视频会议开到第 47 分钟，你在干嘛？",
+        choices: [
+          { title: "点头，但脑内在卸载公司", note: "摄像头里的我只是皮肤。", score: { M: 2, Z: 1 } },
+          { title: "记录一句没人会看的结论", note: "会议纪要是电子骨灰。", score: { L: 1, R: 2 } },
+          { title: "准备一句安全废话", note: "‘我补充一点’但不真的补充。", score: { Z: 2, J: 1 } },
+          { title: "想把日历全部炸掉", note: "反会议恐怖分子。", score: { F: 2, S: 1 } }
+        ]
+      },
+      {
+        text: "线上报警响起，你更像哪种生物？",
+        choices: [
+          { title: "被电击复活的尸体", note: "平时死，报警活。", score: { L: 2, R: 2 } },
+          { title: "日志巷里的流浪侦探", note: "堆栈会说话，只是很脏。", score: { S: 2, L: 1 } },
+          { title: "先问是不是我的服务", note: "甩锅是人类本能。", score: { F: 1, Z: 2 } },
+          { title: "祈祷它自己恢复", note: "自愈系统，拜托你自愈。", score: { M: 2, D: 1 } }
+        ]
+      },
+      {
+        text: "面对 Code Review 的评论，你最想回复？",
+        choices: [
+          { title: "你说得对，但我不想改", note: "理性认可，身体拒绝。", score: { M: 2, F: 1 } },
+          { title: "这个历史原因比较复杂", note: "复杂=没人敢动。", score: { R: 2, Z: 1 } },
+          { title: "已修，顺手补了测试", note: "过度靠谱也是一种病。", score: { L: 2, S: 1 } },
+          { title: "我们要不要先统一规范？", note: "把战场扩大到制度层。", score: { S: 2, F: 1 } }
+        ]
+      },
+      {
+        text: "如果公司文化是一门编程语言，你觉得它是？",
+        choices: [
+          { title: "弱类型废话脚本", note: "什么都能解释，什么都不负责。", score: { Z: 2, F: 1 } },
+          { title: "没有文档的祖传框架", note: "靠口口相传和老人脸色运行。", score: { R: 2, S: 1 } },
+          { title: "只能追加不能删除的日志", note: "会议越来越多，人越来越空。", score: { D: 2, M: 1 } },
+          { title: "一个我想 fork 的烂项目", note: "不想维护，只想重开。", score: { F: 2, S: 1 } }
+        ]
+      },
+      {
+        text: "你理想中的工位结局是？",
+        choices: [
+          { title: "没人找我，我偷偷变强", note: "安静、低社交、高缓存命中。", score: { S: 2, M: 1 } },
+          { title: "任务清楚，到点消失", note: "不是梦想，是基本人权。", score: { L: 2, R: 1 } },
+          { title: "看起来很忙，实际很空", note: "人生已经够具体了，工作可以抽象。", score: { Z: 2, D: 1 } },
+          { title: "工资到账，灵魂下班", note: "一切文化最终都该体现在银行卡。", score: { F: 2, M: 1 } }
+        ]
+      }
+    ];
+
+    const types = [
+      { code: "IMFW", name: "我是废物", percent: "0.2%", sheet: 1, slot: 0, weights: { M: 9, L: 0, Z: 5, S: 1, D: 4, J: 1, F: 6, R: 1 }, desc: "I am 废物。不是能力不行，是灵魂先递交了离职申请。你会把 TODO 看成墓志铭，把工位坐成废墟。" },
+      { code: "TOIL", name: "带薪厕游者", percent: "3.3%", sheet: 1, slot: 1, weights: { M: 8, L: 1, Z: 4, S: 1, D: 9, J: 2, F: 6, R: 2 }, desc: "你把卫生间开发成第二办公区：左手手机，右手游戏，门外是资本，门内是自由。" },
+      { code: "PPTX", name: "汇报幻术师", percent: "5.1%", sheet: 1, slot: 2, weights: { M: 2, L: 5, Z: 9, S: 3, D: 1, J: 8, F: 1, R: 7 }, desc: "你能把两个接口、三个截图、四句废话炼成一页战略路径图。代码不会发光，PPT 会。" },
+      { code: "AFKW", name: "离席幽灵", percent: "8.8%", sheet: 1, slot: 3, weights: { M: 9, L: 1, Z: 6, S: 2, D: 6, J: 1, F: 5, R: 4 }, desc: "头像在线，椅子在线，鼠标也在线；只有你本人以量子态存在于茶水间。" },
+      { code: "DEAD", name: "死线诈尸", percent: "0.9%", sheet: 1, slot: 4, weights: { M: 1, L: 9, Z: 3, S: 6, D: 1, J: 7, F: 2, R: 8 }, desc: "平时像离线服务，deadline 前突然复活。你不是活着，是被排期重新拉起。" },
+      { code: "DRNK", name: "咖啡酒鬼", percent: "4.2%", sheet: 1, slot: 5, weights: { M: 3, L: 7, Z: 5, S: 2, D: 2, J: 8, F: 4, R: 5 }, desc: "你没有血液，只有冰美式和过期需求。精神摇晃，但手还能自动补分号。" },
+      { code: "JIRA", name: "工单囚徒", percent: "12.4%", sheet: 1, slot: 6, weights: { M: 2, L: 8, Z: 4, S: 8, D: 1, J: 7, F: 2, R: 8 }, desc: "你被泳道、标签、优先级驯化。每张卡片都写着需求，每张卡片也都写着命。" },
+      { code: "MEET", name: "会议浮尸", percent: "9.7%", sheet: 1, slot: 7, weights: { M: 7, L: 2, Z: 9, S: 2, D: 3, J: 5, F: 4, R: 7 }, desc: "你的肉身在会议里点头，灵魂在后台卸载公司文化。麦克风静音是最后的尊严。" },
+      { code: "CRUD", name: "增删改查牲口", percent: "11.2%", sheet: 2, slot: 0, weights: { M: 3, L: 8, Z: 5, S: 6, D: 1, J: 4, F: 4, R: 8 }, desc: "你被表格、字段、筛选器和保存按钮反复碾压。不是你在写后台，是后台在饲养你。" },
+      { code: "HHHH", name: "傻乐者", percent: "0.0%", sheet: 2, slot: 1, weights: { M: 6, L: 2, Z: 8, S: 1, D: 5, J: 3, F: 7, R: 0 }, desc: "群里哈哈哈，心里啊啊啊。你用笑声给所有荒谬打了一个廉价补丁。" },
+      { code: "BUGG", name: "虫洞守夜人", percent: "6.6%", sheet: 2, slot: 2, weights: { M: 1, L: 9, Z: 2, S: 8, D: 1, J: 6, F: 5, R: 5 }, desc: "你闻得到异常栈里的腐味。别人说玄学，你说先看日志。" },
+      { code: "PUSH", name: "强推战士", percent: "7.5%", sheet: 2, slot: 3, weights: { M: 2, L: 7, Z: 3, S: 4, D: 1, J: 5, F: 8, R: 2 }, desc: "你相信冲突能解决冲突。红色报错是路障，不是停车标志。" },
+      { code: "NULL", name: "空心打工人", percent: "10.1%", sheet: 2, slot: 4, weights: { M: 8, L: 1, Z: 3, S: 6, D: 5, J: 1, F: 2, R: 9 }, desc: "你没有情绪，只有占位符。别人燃烧，你返回 null。" },
+      { code: "RAGE", name: "静音反贼", percent: "4.8%", sheet: 2, slot: 5, weights: { M: 3, L: 5, Z: 4, S: 8, D: 2, J: 4, F: 9, R: 1 }, desc: "你嘴上‘好的’，心里已经提交了一万字组织罪状。反抗被静音，但没有被关闭。" },
+      { code: "OKOK", name: "好的呢奴隶", percent: "18.6%", sheet: 2, slot: 6, weights: { M: 3, L: 7, Z: 8, S: 2, D: 2, J: 6, F: 0, R: 9 }, desc: "你熟练掌握‘好的呢’‘辛苦啦’‘我看下’。每一句都像把自己折叠进工牌里。" },
+      { code: "NORM", name: "正常人", percent: "0.1%", sheet: 2, slot: 7, weights: { M: 2, L: 7, Z: 1, S: 8, D: 1, J: 2, F: 4, R: 3 }, desc: "极危稀有物种：能沟通、能下班、能拒绝无效会议。建议立即保护，不要放进大厂。" }
+    ];
+
+    const state = { index: 0, answers: Array(questions.length).fill(null) };
+    let sharedType = null;
+    let advanceTimer = null;
+    let lastRevealCode = "";
+    const codeRain = document.querySelector("#codeRain");
+    const questionEl = document.querySelector("#question");
+    const choicesEl = document.querySelector("#choices");
+    const stepText = document.querySelector("#stepText");
+    const progressBar = document.querySelector("#progressBar");
+    const sampleDock = document.querySelector("#sampleDock");
+    const entropyText = document.querySelector("#entropyText");
+    const renderText = document.querySelector("#renderText");
+    const predictionCode = document.querySelector("#predictionCode");
+    const predictionBars = document.querySelector("#predictionBars");
+    const prevBtn = document.querySelector("#prevBtn");
+    const nextBtn = document.querySelector("#nextBtn");
+    const resetBtn = document.querySelector("#resetBtn");
+    const sharedView = document.querySelector("#sharedView");
+    const sharedArt = document.querySelector("#sharedArt");
+    const sharedCode = document.querySelector("#sharedCode");
+    const sharedName = document.querySelector("#sharedName");
+    const sharedDesc = document.querySelector("#sharedDesc");
+    const sharedRouteCode = document.querySelector("#sharedRouteCode");
+    const sharedStartBtn = document.querySelector("#sharedStartBtn");
+    const resultCard = document.querySelector(".result-card");
+    const resultFlipper = document.querySelector("#resultFlipper");
+    const resultCode = document.querySelector("#resultCode");
+    const resultName = document.querySelector("#resultName");
+    const resultDesc = document.querySelector("#resultDesc");
+    const resultArt = document.querySelector("#resultArt");
+    const traits = document.querySelector("#traits");
+    const resultFlipBtn = document.querySelector("#resultFlipBtn");
+    const resultBackBtn = document.querySelector("#resultBackBtn");
+    const resultBackTitle = document.querySelector("#resultBackTitle");
+    const resultBackLog = document.querySelector("#resultBackLog");
+    const copyBtn = document.querySelector("#copyBtn");
+    const shareBtn = document.querySelector("#shareBtn");
+    const toast = document.querySelector("#toast");
+    const typeGrid = document.querySelector("#typeGrid");
+    const quizPanel = document.querySelector(".quiz-panel");
+    const pipelineStatus = document.querySelector("#pipelineStatus");
+    const pipelineLog = document.querySelector("#pipelineLog");
+    const resultModal = document.querySelector("#resultModal");
+    const resultModalPanel = resultModal.querySelector(".modal-panel");
+    const resultModalClose = document.querySelector("#resultModalClose");
+    const modalArt = document.querySelector("#modalArt");
+    const modalCode = document.querySelector("#modalCode");
+    const modalName = document.querySelector("#modalName");
+    const modalDesc = document.querySelector("#modalDesc");
+    const modalCopyBtn = document.querySelector("#modalCopyBtn");
+    const modalShareBtn = document.querySelector("#modalShareBtn");
+    const modalRetestBtn = document.querySelector("#modalRetestBtn");
+    const imageModal = document.querySelector("#imageModal");
+    const imageModalClose = document.querySelector("#imageModalClose");
+    const imageModalImg = document.querySelector("#imageModalImg");
+    const moodOrbit = document.querySelector("#moodOrbit");
+    const moodImpulseBtn = document.querySelector("#moodImpulseBtn");
+    const sigCode = document.querySelector("#sigCode");
+    const sigName = document.querySelector("#sigName");
+    const sigText = document.querySelector("#sigText");
+    const sigMeta = document.querySelector("#sigMeta");
+    const sigRerollBtn = document.querySelector("#sigRerollBtn");
+    const themeToggle = document.querySelector("#themeToggle");
+    const eggModal = document.querySelector("#eggModal");
+    const eggModalClose = document.querySelector("#eggModalClose");
+    let logoClicks = 0;
+
+    const SIGNATURE_TOTAL = 1000;
+    const TYPE_SIGNATURE_COUNT = 50;
+    const GLOBAL_SIGNATURE_COUNT = 200;
+    const signatureSeeds = {
+      IMFW: [
+        "今天不是我在写代码，是键盘拖着尸体走。", "我不是废物，我是还没被回收的临时对象。", "TODO 写完了，人生 TODO 还没开始。", "灵魂已 404，肉体仍在监听需求。", "我的生产力正在进入省电模式。", "别催，我正在和自尊做垃圾回收。", "欲速则不达，慢活拉一坨。", "今天可能需要两杯 38 度的卡布奇诺，给灵魂做热修。"
+      ],
+      TOIL: [
+        "厕所是我的第二办公区，也是最后的净土。", "我在隔间里完成了比会议更多的思考。", "带薪拉屎不是偷懒，是人体级异步任务。", "门外是资本，门内是弱网自由。", "冲水声是我今天听过最像掌声的声音。", "工牌在外面坐牢，我在里面做回人类。", "欲速则不达，慢活拉一坨。", "今天的深度思考发生在公司最小的会议室。"
+      ],
+      PPTX: [
+        "代码不会发光，但 PPT 会骗过所有人。", "我把两个接口包装成了年度战略。", "今天又用图表稀释了一点真实。", "需求没做完，但路线图已经登基。", "我的超能力是把空进度做成渐变箭头。", "请相信这页动画，它比代码更稳定。", "做完你的做你的，我先把价值闭环画圆。", "战略不是假的，只是暂时没有代码愿意承认。"
+      ],
+      AFKW: [
+        "头像在线，灵魂正在茶水间漂移。", "鼠标会动，但我不一定活着。", "我是一段在线状态很好的离线进程。", "人不在工位，但工位在替我坐牢。", "如果找不到我，请先检查缓存。", "我不是失联，是进入低功耗幽灵模式。", "鼠标微动是成年人最后的体面。", "今天人在附近，心在很远的分支上。"
+      ],
+      DEAD: [
+        "deadline 不是日期，是复活咒语。", "我平时离线，报警时诈尸。", "死线一到，我的尸体自动合并分支。", "今天又被排期从坟里拉起来了。", "我不是熬夜，是被项目续命。", "只要需求不死，我就不能安葬。", "我没有赶进度，是进度在赶尸。", "零点之后的我，属于项目，不属于自然人。"
+      ],
+      DRNK: [
+        "我的血液里有 70% 咖啡和 30% 报错。", "冰美式是我和世界的适配层。", "手在补分号，脑子在晃。", "今天的心跳频率由咖啡因管理。", "我不是清醒，是缓存还没过期。", "再来一杯，我就能假装理解需求。", "咖啡不是饮料，是我续命的 npm 包。", "苦不是咖啡，是需求评审后的余味。"
+      ],
+      JIRA: [
+        "我不是人，我是泳道里的一张卡。", "每个标签都在给灵魂上枷锁。", "我被拖拽过来，也会被拖拽过去。", "优先级改了，命也跟着改了。", "工单关闭了，我也差点关闭。", "今日命运：从 To Do 平移到 In Progress。", "看板很敏捷，只有我很迟钝。", "验收标准写得很轻，压下来像井盖。"
+      ],
+      MEET: [
+        "会议纪要比我更像活人。", "我的麦克风静音，灵魂也静音。", "大家对齐了一小时，最后各自歪着走。", "摄像头没开，是因为人类画面加载失败。", "我今天的产出是三次点头和一次好的。", "会议室没有风，但我一直在凋零。", "这个会很短，短到只偷走半条命。", "我把反对意见存成了草稿。"
+      ],
+      CRUD: [
+        "增删改查不是技能，是命运。", "我把人生写成了四个接口。", "今天又在数据库里翻找自尊。", "业务很复杂，落到我手里全是表单。", "字段新增了，灵魂减少了。", "我不是全栈，我是全都得干。", "接口通了，人也差点通透。", "我的人生主键可能没建索引。"
+      ],
+      HHHH: [
+        "我笑了，因为不笑就要提离职。", "哈哈哈哈是我最后的异常处理。", "我把崩溃格式化成了表情包。", "今天的快乐来自别人也没写完。", "笑声很大，人生很小。", "我不是乐观，我是日志级别调成了 INFO。", "先哈哈，再看看还能不能活。", "傻乐是我的 try-catch。"
+      ],
+      BUGG: [
+        "bug 不会消失，只会换个环境复现。", "我修好了一个问题，释放了三个野生问题。", "线上稳定得像谣言。", "复现路径像玄学，报警声像闹钟。", "今天的根因分析是：世界不讲道理。", "我和日志对视，日志选择沉默。", "橡皮鸭听完了，鸭也沉默了。", "这个 bug 很懂事，只在老板演示时出现。"
+      ],
+      PUSH: [
+        "我在周五下午把命运推向远方。", "git push 之后，心跳进入生产环境。", "别问测没测，问就是相信灰度。", "我提交的不是代码，是一封给未来的恐吓信。", "强推一时爽，回滚火葬场。", "合并按钮亮起时，人性开始变暗。", "我把希望 squash 了，把风险 rebase 了。", "生产环境会记住每一个勇敢的人。"
+      ],
+      NULL: [
+        "我心里什么都没有，但类型检查通过。", "今天的情绪返回 null。", "空不是没有，是被需求掏空后留下的形状。", "我看着屏幕，屏幕也没有看我。", "人生没有默认值，只有 undefined。", "我不是冷漠，我是被初始化失败。", "我把自己传参传丢了。", "此刻的我，是一个没有引用的对象。"
+      ],
+      RAGE: [
+        "嘴上好的，心里已经提交了一万字组织罪状。", "反抗被静音，但没有被关闭。", "我没有生气，只是在后台编译辞职信。", "每次点头都是一次无声的 forking。", "我把怒气压进 commit message，等待未来考古。", "语音会议很平静，内心已经删库跑路十次。", "我暂时不反驳，因为我要保留证据链。", "沉默不是同意，是进入战术省电。"
+      ],
+      OKOK: [
+        "好的呢，是我最熟练的设计模式。", "我把拒绝编译成了收到。", "嘴上 OK，内心 Segmentation Fault。", "需求很好，下次别提了。", "我说没问题，是因为问题已经大到无法命名。", "好的，安排，稍等，我先把自己关机。", "每一个好的背后，都有一个不好的我。", "我没有妥协，我只是把人格切到了兼容模式。"
+      ],
+      NORM: [
+        "正常人误入机房，正在保持礼貌。", "我暂时没有发臭，只是味道还在构建。", "今天还能沟通，说明系统尚未完全腐烂。", "我像一个通过单元测试的人类。", "正常是短暂的，需求是永恒的。", "我还会按时吃饭，这是最后的体面。", "我没有特别崩溃，可能是缓存命中。", "平静不是健康，是报警阈值调高了。"
+      ]
+    };
+    const signatureProfiles = {
+      IMFW: { subject: ["自尊", "简历", "键盘", "灵魂", "工位", "TODO"], verb: ["正在省电", "被垃圾回收", "悄悄降级", "尝试重启", "进入只读", "缓慢掉帧"], tail: ["像一段无人认领的废代码。", "但日报仍然要求它发光。", "并礼貌地返回了一个空对象。", "顺便把人生标成了 wontfix。"] },
+      TOIL: { subject: ["隔间", "马桶", "工牌", "肠道服务", "卫生间 Wi-Fi", "冲水声"], verb: ["接管了今日架构", "完成了深度思考", "成为临时避难所", "执行异步任务", "稳定输出沉默", "抵御开放办公区"], tail: ["这不是摸鱼，是人体级容灾。", "门一关，资本就只剩回声。", "平和地讲，那里比会议室更讲逻辑。", "慢一点，反而比较像活着。"] },
+      PPTX: { subject: ["路线图", "渐变箭头", "价值闭环", "战略大图", "汇报页", "里程碑"], verb: ["覆盖了真实进度", "把空白排版得高级", "安抚了会议室", "暂时骗过了明天", "完成了视觉上线", "绕开了代码审查"], tail: ["它没有实现，但它很会发光。", "世界看起来向右上方逃跑。", "请先相信动画，再质疑现实。", "做完你的做你的，我先画圆。"] },
+      AFKW: { subject: ["头像", "鼠标", "水杯", "在线状态", "椅子", "茶水间"], verb: ["替我值班", "维持人类假象", "正在弱引用我", "假装专注", "低频漂移", "帮我坐牢"], tail: ["如果问起，就说我在同步上下文。", "人近在咫尺，心远在别的分支。", "这不是失联，是缓存策略。", "成年人最后的体面是鼠标微动。"] },
+      DEAD: { subject: ["死线", "排期", "凌晨", "报警", "肉体", "分支"], verb: ["把我从坟里拉起", "给尸体续了命", "稳定压在胸口", "要求立即复活", "进入临时扩容", "自动合并遗憾"], tail: ["只要需求不死，我就不能安葬。", "零点以后，我不再属于自然人。", "进度没有赶上，是进度在赶尸。", "今晚的月亮像一个未关闭的工单。"] },
+      DRNK: { subject: ["咖啡因", "冰美式", "心跳", "杯底", "困意", "卡布奇诺"], verb: ["管理了今日清醒", "把我临时拉起", "覆盖了报错", "给灵魂热修", "短暂伪装成人", "将世界重新缩进"], tail: ["苦的不是饮料，是评审后的余味。", "今天可能需要两杯 38 度的卡布奇诺。", "喝完这口，再假装理解需求。", "清醒只是缓存还没过期。"] },
+      JIRA: { subject: ["泳道", "标签", "优先级", "验收标准", "看板", "故事点"], verb: ["拖拽了我的命", "把人压成卡片", "稳定制造幻觉", "改写了今天", "假装一切敏捷", "给灵魂加了筛选条件"], tail: ["完成的不是任务，是移动。", "平和地讲，我被状态机管理了。", "工单关闭时，我也差点关闭。", "看板很轻，落到人身上很重。"] },
+      MEET: { subject: ["麦克风", "会议纪要", "摄像头", "对齐", "同步", "点头"], verb: ["静音了反抗", "记录了空转", "遮住了人类", "消耗了电量", "偷走了下午", "生成了礼貌"], tail: ["大家对齐完，继续各自歪着。", "这个会很短，短到只偷走半条命。", "我把意见存成草稿，没有提交。", "沉默正在屏幕共享。"] },
+      CRUD: { subject: ["表单", "字段", "接口", "主键", "数据库", "后台管理"], verb: ["吞下了人生", "新增了疲惫", "删除了体面", "修改了命运", "查询了虚无", "把我做成牲口"], tail: ["增删改查不是技能，是命运。", "复杂业务最后都会落成一张表。", "接口通了，人也快通透了。", "我的人生可能忘了建索引。"] },
+      HHHH: { subject: ["笑声", "表情包", "哈哈哈", "群聊", "崩溃", "嘴角"], verb: ["包装了事故", "屏蔽了痛感", "替我异常处理", "短暂续命", "假装乐观", "把绝望格式化"], tail: ["不笑就要提离职。", "日志级别调成 INFO 后，人生显得正常。", "先哈哈，再看看还能不能活。", "傻乐是我的 try-catch。"] },
+      BUGG: { subject: ["bug", "日志", "橡皮鸭", "复现路径", "线上", "断点"], verb: ["换了环境复活", "选择沉默", "听完也沉默", "像玄学一样飘", "稳定制造铃声", "卡在我的尊严上"], tail: ["修好一个问题，释放三个野生问题。", "根因分析：世界不讲道理。", "它只在老板演示时出现。", "Stack Overflow 还没来，先问鸭。"] },
+      PUSH: { subject: ["git push", "合并按钮", "周五下午", "生产环境", "回滚", "commit message"], verb: ["把心跳送上云端", "让人性变暗", "向未来发送恐吓信", "记住了勇敢的人", "临时相信灰度", "压缩了悔意"], tail: ["强推一时爽，回滚火葬场。", "别问测没测，问就是相信命运。", "生产会教育每一个浪漫主义者。", "我把风险 rebase 到了明天。"] },
+      NULL: { subject: ["情绪", "默认值", "引用", "对象", "心", "undefined"], verb: ["返回 null", "初始化失败", "被传参传丢", "没有被引用", "安静悬空", "通过了类型检查"], tail: ["空不是没有，是被掏空后留下的形状。", "屏幕没有看我，我也没有看屏幕。", "人生没有默认值。", "此刻的我适合被垃圾回收。"] },
+      RAGE: { subject: ["沉默", "点头", "怒气", "证据链", "辞职信", "内心分支"], verb: ["进入战术省电", "提交无声 fork", "编译中", "偷偷保留", "没有关闭", "正在等待合并"], tail: ["嘴上好的，心里已经写完组织罪状。", "反抗被静音，但没有被关闭。", "我不反驳，是为了保留日志。", "语气越平静，commit 越危险。"] },
+      OKOK: { subject: ["好的呢", "收到", "没问题", "安排", "兼容模式", "礼貌"], verb: ["吞下了拒绝", "编译成妥协", "把人格降级", "临时上线", "隐藏了异常", "覆盖了真实想法"], tail: ["每个好的背后，都有一个不好的我。", "需求很好，下次别提了。", "我说没问题，是因为问题已经无法命名。", "稍等，我先把自己关机。"] },
+      NORM: { subject: ["正常", "午饭", "单元测试", "沟通", "报警阈值", "缓存"], verb: ["短暂存在", "维持体面", "通过人类检查", "还没腐烂", "被调高", "命中了平静"], tail: ["今天还能沟通，说明系统尚未完全腐烂。", "正常是短暂的，需求是永恒的。", "我还会按时吃饭，这是最后的体面。", "平静不是健康，是报警阈值调高了。"] }
+    };
+    const globalSignatureSeeds = [
+      "做完你的做你的，别把我的也做成我的。", "平和地讲，事情正在变得不太像人事。", "我很冷静，只是灵魂在后台打滚。", "工作没有伤害我，它只是每天稳定地路过我的尸体。", "先活着，再讨论价值闭环。", "人生建议：少开会，多通风。", "我不是效率低，我是在进行情绪限流。", "今天也许会好起来，也许只是 Jira 换了个颜色。", "痛苦没有版本号，但每天都在更新。", "我对齐了目标，目标没有对齐我。", "需求像天气预报，不准但必须看。", "加班不是成长，是时间被打包上传。", "橡皮鸭听懂了，产品还没有。", "Stack Overflow 沉默时，我开始相信玄学。", "周五发版是一种民间极限运动。", "线上没挂，只是在酝酿戏剧性。", "今天的技术债很礼貌，明天它会来敲门。", "别急，慢就是快，快就是重开。", "我的脑子已经下班，只剩手还在值守。", "需求评审结束后，空气里有一股烧焦的理性。", "如果生活有回滚，我愿意先撤销今天。", "日报写得越满，灵魂越像空数组。", "我不是摆烂，我是在保护系统免受我影响。", "今天没有产出，只有损耗被精确记录。", "世界正在加载，我选择超时。", "低耦合是架构理想，高耦合是我的人生。", "我没有摸鱼，我在为鱼提供技术支持。", "老板画饼，我负责消化不良。", "需求一变，昨天的努力自动进入历史遗留。", "早会很短，短到足够毁掉一整个早上。", "代码审查不是审查代码，是审查人格。", "测试通过了，不代表人生通过了。", "我把希望写进注释，编译器选择忽略。", "今天的风很大，适合把工单吹回需求池。", "如果 bug 会说话，它一定先说：不是我。", "上线前人人平等，上线后运维最大。", "人类的悲欢并不相通，但报错码可以。", "我想休息，系统提示权限不足。", "需求没有边界，只有我有边界感。", "别催，催也只会得到一个更快的错误。"
+    ];
+    const globalSubjects = ["需求", "早会", "日报", "工位", "老板", "测试", "代码", "线上", "文档", "评审", "键盘", "显示器", "Slack", "飞书", "工单", "橡皮鸭", "技术债", "遗留系统", "周五", "咖啡"];
+    const globalVerbs = ["轻轻压住了今天", "把体面编译失败", "正在制造低频痛苦", "礼貌地掏空了人", "缓慢吞掉下午", "把希望转成 backlog", "稳定输出沉默", "像缓存一样过期", "把人训练成脚本", "短暂通过了健康检查"];
+    const globalTails = ["平和地讲，这很现代。", "没有大事，只是人少了一点。", "问题不大，主要是人有问题。", "慢活拉一坨，快活拉一车。", "今天先这样，明天继续不怎样。", "欲速则不达，欲达先请假。", "做完你的做你的，做不完也先活着。", "这不是失败，是一次情绪灰度发布。", "如果不能解决问题，就先解决表情。", "系统很稳定，稳定地让人不稳定。"];
+
+    function uniquePush(list, text) {
+      if (text && !list.includes(text)) list.push(text);
+    }
+
+    function buildTypeSignatures(type) {
+      const profile = signatureProfiles[type.code];
+      const output = [];
+      (signatureSeeds[type.code] || []).forEach((text) => uniquePush(output, text));
+      let cursor = 0;
+      while (output.length < TYPE_SIGNATURE_COUNT) {
+        const subject = profile.subject[cursor % profile.subject.length];
+        const verb = profile.verb[Math.floor(cursor / profile.subject.length) % profile.verb.length];
+        const tail = profile.tail[Math.floor(cursor / (profile.subject.length * profile.verb.length)) % profile.tail.length];
+        const templates = [
+          `${subject}正在${verb.replace(/^正在/, "")}，${tail}`,
+          `今天的${subject}${verb}，${tail}`,
+          `${type.code}.mood(): ${subject}${verb}，但我仍然礼貌地点了点头。`,
+          `平和地讲，${subject}${verb}。${tail}`
+        ];
+        uniquePush(output, templates[cursor % templates.length]);
+        cursor += 1;
+      }
+      return output.slice(0, TYPE_SIGNATURE_COUNT);
+    }
+
+    function buildGlobalSignatures() {
+      const output = [];
+      globalSignatureSeeds.forEach((text) => uniquePush(output, text));
+      let cursor = 0;
+      while (output.length < GLOBAL_SIGNATURE_COUNT) {
+        const subject = globalSubjects[cursor % globalSubjects.length];
+        const verb = globalVerbs[Math.floor(cursor / globalSubjects.length) % globalVerbs.length];
+        const tail = globalTails[Math.floor(cursor / (globalSubjects.length * globalVerbs.length)) % globalTails.length];
+        const templates = [
+          `${subject}${verb}，${tail}`,
+          `console.log("${subject}"): ${verb}，${tail}`,
+          `今天的${subject}没有恶意，只是${verb}。${tail}`,
+          `平静播报：${subject}${verb}。${tail}`
+        ];
+        uniquePush(output, templates[cursor % templates.length]);
+        cursor += 1;
+      }
+      return output.slice(0, GLOBAL_SIGNATURE_COUNT);
+    }
+
+    const signatureBank = Object.fromEntries(types.map((type) => [type.code, buildTypeSignatures(type)]));
+    const globalSignatures = buildGlobalSignatures();
+    const allMoodSignatures = [...Object.values(signatureBank).flat(), ...globalSignatures].slice(0, SIGNATURE_TOTAL);
+
+    let moodIndex = 0;
+    let moodAngle = 0;
+    let moodVelocity = 0;
+    let moodPointerX = 0;
+    let moodPointerY = 0;
+    let moodLastX = null;
+    let moodLastTime = 0;
+    let moodSettledIndex = 0;
+    let moodSpinTarget = null;
+    let moodRaf = null;
+    let moodHoverLockedUntil = 0;
+    let moodIsAutoSpinning = false;
+    let currentMoodType = types[0];
+
+    function randomFrom(list) {
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
+    function updateSignature(type, reroll = true) {
+      currentMoodType = type;
+      const pool = [...(signatureBank[type.code] || []), ...globalSignatures];
+      const signature = reroll ? randomFrom(pool) : (signatureBank[type.code] || pool)[0];
+      const signatureIndex = Math.max(1, allMoodSignatures.indexOf(signature) + 1 || Math.floor(Math.random() * SIGNATURE_TOTAL) + 1);
+      sigCode.textContent = type.code;
+      sigName.textContent = `${type.name} · ${type.percent}`;
+      sigText.textContent = signature;
+      sigMeta.textContent = `signature ${signatureIndex}/${SIGNATURE_TOTAL} · ${type.code}.mood() · pool=${pool.length}`;
+      const card = sigCode.closest(".signature-card");
+      if (card) {
+        card.classList.remove("pulse");
+        void card.offsetWidth;
+        card.classList.add("pulse");
+      }
+    }
+
+    function normalizeDegrees(value) {
+      return ((value % 360) + 360) % 360;
+    }
+
+    function shortestAngleDiff(target, current) {
+      return ((target - current + 540) % 360) - 180;
+    }
+
+    function getFrontMoodIndex() {
+      const step = 360 / types.length;
+      return (Math.round(-moodAngle / step) % types.length + types.length) % types.length;
+    }
+
+    function setMoodIndex(index, reroll = false) {
+      moodIndex = index;
+      updateSignature(types[index], reroll);
+    }
+
+    function settleMoodIndex() {
+      const index = getFrontMoodIndex();
+      if (moodSettledIndex !== index) {
+        moodSettledIndex = index;
+        setMoodIndex(index, true);
+      }
+    }
+
+    function layoutMoodCards() {
+      const radius = Math.min(580, Math.max(330, moodOrbit.clientWidth * .36));
+      const step = 360 / types.length;
+      const activeIndex = getFrontMoodIndex();
+      if (activeIndex !== moodIndex) setMoodIndex(activeIndex, false);
+      moodOrbit.querySelectorAll(".mood-card").forEach((card, index) => {
+        const angle = step * index + moodAngle;
+        const normalized = shortestAngleDiff(0, normalizeDegrees(angle));
+        const radians = normalized * Math.PI / 180;
+        const depth = Math.cos(radians);
+        const side = Math.sin(radians);
+        const scale = .68 + (depth + 1) * .22 + (index === activeIndex ? .12 : 0);
+        const opacity = Math.max(.16, .48 + (depth + 1) * .26);
+        const yLift = Math.abs(side) * -18 + (depth < 0 ? 18 : 0);
+        card.style.transform = `translate(-50%, -50%) rotateY(${angle}deg) translateZ(${radius}px) rotateY(${-angle}deg) translateY(${yLift}px) scale(${scale})`;
+        card.style.opacity = String(opacity);
+        card.style.zIndex = String(Math.round((depth + 1) * 100));
+        card.style.pointerEvents = depth > -.35 ? "auto" : "none";
+        card.classList.toggle("active", index === activeIndex);
+      });
+    }
+
+    function tickMoodRing() {
+      const step = 360 / types.length;
+      const frontIndex = getFrontMoodIndex();
+      if (moodSpinTarget !== null) {
+        const diff = moodSpinTarget - moodAngle;
+        moodVelocity += diff * .012;
+        moodVelocity *= .94;
+        if (Math.abs(diff) < .18 && Math.abs(moodVelocity) < .08) {
+          moodAngle = moodSpinTarget;
+          moodVelocity = 0;
+          moodSpinTarget = null;
+          moodIsAutoSpinning = false;
+          settleMoodIndex();
+          lockMoodHover(5000);
+        }
+      } else if (Math.abs(moodVelocity) < .045) {
+        const target = -frontIndex * step;
+        const diff = shortestAngleDiff(target, moodAngle);
+        moodVelocity += diff * .018;
+        if (Math.abs(diff) < .05 && Math.abs(moodVelocity) < .025) {
+          moodAngle = target;
+          moodVelocity = 0;
+          settleMoodIndex();
+        }
+      }
+      moodAngle += moodVelocity;
+      moodVelocity *= moodSpinTarget === null ? .935 : .985;
+      if (Math.abs(moodVelocity) > .02) moodSettledIndex = -1;
+      layoutMoodCards();
+      moodRaf = requestAnimationFrame(tickMoodRing);
+    }
+
+    function lockMoodHover(ms) {
+      moodHoverLockedUntil = performance.now() + ms;
+      moodOrbit.classList.add("cooldown");
+      moodImpulseBtn.textContent = "已定格，5s 内只读观察";
+      window.setTimeout(() => {
+        if (performance.now() >= moodHoverLockedUntil - 80) {
+          moodOrbit.classList.remove("cooldown");
+          moodImpulseBtn.textContent = "随机施加一坨力 →";
+        }
+      }, ms + 100);
+    }
+
+    function applyMoodForce(force) {
+      if (performance.now() < moodHoverLockedUntil || moodIsAutoSpinning) return;
+      moodSpinTarget = null;
+      moodVelocity += Math.max(-1.35, Math.min(1.35, force));
+      moodSettledIndex = -1;
+    }
+
+    function spinMoodToRandom() {
+      const step = 360 / types.length;
+      const targetIndex = Math.floor(Math.random() * types.length);
+      const direction = Math.random() > .5 ? 1 : -1;
+      const laps = 5 + Math.floor(Math.random() * 4);
+      const baseTarget = -targetIndex * step;
+      const diff = shortestAngleDiff(baseTarget, moodAngle);
+      moodSpinTarget = moodAngle + diff + direction * laps * 360;
+      moodVelocity = direction * (7 + Math.random() * 3);
+      moodSettledIndex = -1;
+      moodIsAutoSpinning = true;
+      moodHoverLockedUntil = 0;
+      moodOrbit.classList.remove("cooldown");
+      moodImpulseBtn.textContent = `旋转中：${laps} laps`;
+    }
+
+    function renderMoodWall() {
+      moodOrbit.innerHTML = types.map((type, index) => `
+        <button class="mood-card" type="button" data-index="${index}" aria-label="选择 ${type.code} ${type.name}">
+          <img src="${artPath(type)}" alt="${type.code} ${type.name}" />
+          <span>${type.code}</span>
+        </button>
+      `).join("");
+      updateSignature(types[moodIndex], false);
+      layoutMoodCards();
+      if (!moodRaf) moodRaf = requestAnimationFrame(tickMoodRing);
+    }
+
+    document.addEventListener("pointermove", (event) => {
+      document.body.style.setProperty("--mx", `${event.clientX}px`);
+      document.body.style.setProperty("--my", `${event.clientY}px`);
+    }, { passive: true });
+
+    function updateScrollProgress() {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = maxScroll > 0 ? Math.round(window.scrollY / maxScroll * 100) : 0;
+      document.body.style.setProperty("--scroll", `${progress}%`);
+    }
+
+    window.addEventListener("scroll", updateScrollProgress, { passive: true });
+    updateScrollProgress();
+
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem("sbit-theme"); } catch (error) {}
+    if (savedTheme === "light") document.body.classList.add("light");
+    themeToggle.textContent = document.body.classList.contains("light") ? "light()" : "dark()";
+
+    themeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("light");
+      const mode = document.body.classList.contains("light") ? "light" : "dark";
+      themeToggle.textContent = `${mode}()`;
+      try { localStorage.setItem("sbit-theme", mode); } catch (error) {}
+      showToast(mode === "light" ? "已切到 Light Mode" : "已切回 Dark Mode");
+    });
+
+    const revealTargets = document.querySelectorAll(".reveal, .feature, .type-card, .showcase-card");
+    if ("IntersectionObserver" in window) {
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) entry.target.classList.add("in-view");
+        });
+      }, { threshold: .18 });
+      revealTargets.forEach((element) => revealObserver.observe(element));
+    } else {
+      revealTargets.forEach((element) => element.classList.add("in-view"));
+    }
+
+    document.querySelector(".logo").addEventListener("click", (event) => {
+      event.preventDefault();
+      logoClicks += 1;
+      if (logoClicks >= 5) {
+        eggModal.classList.add("show");
+        document.body.style.overflow = "hidden";
+        logoClicks = 0;
+      } else {
+        showToast(`彩蛋进度 ${logoClicks}/5`);
+      }
+    });
+
+    moodOrbit.addEventListener("pointerenter", (event) => {
+      moodLastX = event.clientX;
+      moodLastTime = performance.now();
+    });
+
+    moodOrbit.addEventListener("pointermove", (event) => {
+      const rect = moodOrbit.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width - .5;
+      const y = (event.clientY - rect.top) / rect.height - .5;
+      const now = performance.now();
+      if (moodLastX !== null) {
+        const dt = Math.max(24, now - moodLastTime);
+        const speed = (event.clientX - moodLastX) / dt;
+        applyMoodForce(speed * .42);
+      }
+      moodPointerX = x;
+      moodPointerY = y;
+      moodOrbit.style.setProperty("--tiltY", `${x * 5.5}deg`);
+      moodOrbit.style.setProperty("--tiltX", `${-7 - y * 2.8}deg`);
+      moodLastX = event.clientX;
+      moodLastTime = now;
+    });
+
+    moodOrbit.addEventListener("pointerleave", () => {
+      moodLastX = null;
+      moodPointerX = 0;
+      moodPointerY = 0;
+      moodOrbit.style.setProperty("--tiltY", "0deg");
+      moodOrbit.style.setProperty("--tiltX", "-7deg");
+    });
+
+    moodOrbit.addEventListener("click", (event) => {
+      const card = event.target.closest(".mood-card");
+      if (!card) return;
+      event.stopPropagation();
+      const targetIndex = Number(card.dataset.index);
+      const step = 360 / types.length;
+      const targetAngle = -targetIndex * step;
+      const diff = shortestAngleDiff(targetAngle, moodAngle);
+      moodSpinTarget = moodAngle + diff;
+      moodVelocity += diff * .006;
+      moodSettledIndex = -1;
+      moodIsAutoSpinning = false;
+      setMoodIndex(targetIndex, true);
+    });
+
+    sigRerollBtn.addEventListener("click", () => updateSignature(currentMoodType, true));
+
+    moodImpulseBtn.addEventListener("click", spinMoodToRandom);
+
+    window.addEventListener("resize", layoutMoodCards);
+
+    function startCodeRain() {
+      if (!codeRain || !codeRain.getContext) return;
+      const ctx = codeRain.getContext("2d");
+      const tokens = ["TODO", "JIRA", "404", "NULL", "wontfix", "git push", "prod", "bug", "moyu", "OKOK", "RAGE", "CRUD", "npm", "咖啡", "开会", "摸鱼", "拉屎", "需求变更", "Stack", "duck"];
+      let columns = [];
+      let frame = 0;
+      function resize() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        codeRain.width = Math.floor(window.innerWidth * dpr);
+        codeRain.height = Math.floor(window.innerHeight * dpr);
+        codeRain.style.width = `${window.innerWidth}px`;
+        codeRain.style.height = `${window.innerHeight}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const count = Math.ceil(window.innerWidth / 42);
+        columns = Array.from({ length: count }, (_, index) => ({
+          x: index * 42 + Math.random() * 18,
+          y: Math.random() * -window.innerHeight,
+          speed: 0.45 + Math.random() * 1.25,
+          token: randomFrom(tokens),
+          alpha: .18 + Math.random() * .34
+        }));
+      }
+      function draw() {
+        frame += 1;
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        ctx.fillStyle = document.body.classList.contains("light") ? "rgba(22,24,18,.035)" : "rgba(5,6,4,.07)";
+        ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        ctx.font = "900 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
+        columns.forEach((column, index) => {
+          if (frame % 38 === index % 38) column.token = randomFrom(tokens);
+          const light = document.body.classList.contains("light");
+          ctx.fillStyle = light ? `rgba(35,45,18,${column.alpha})` : `rgba(215,255,54,${column.alpha})`;
+          ctx.fillText(column.token, column.x, column.y);
+          ctx.fillStyle = light ? `rgba(255,79,154,${column.alpha * .5})` : `rgba(255,79,154,${column.alpha * .45})`;
+          ctx.fillText(column.token.slice(0, 4), column.x + 8, column.y - 18);
+          column.y += column.speed;
+          if (column.y > window.innerHeight + 40) {
+            column.y = -40 - Math.random() * 260;
+            column.token = randomFrom(tokens);
+            column.speed = 0.45 + Math.random() * 1.25;
+          }
+        });
+        requestAnimationFrame(draw);
+      }
+      resize();
+      window.addEventListener("resize", resize, { passive: true });
+      draw();
+    }
+
+    function getTypePredictions(scores = getScores()) {
+      const ranked = types.map((type) => {
+        const distance = Object.keys(type.weights).reduce((sum, key) => {
+          const diff = (scores[key] || 0) - type.weights[key];
+          return sum + diff * diff;
+        }, 0);
+        return { type, distance, weight: 1 / (1 + Math.sqrt(distance)) };
+      }).sort((a, b) => a.distance - b.distance).slice(0, 3);
+      const total = ranked.reduce((sum, item) => sum + item.weight, 0) || 1;
+      return ranked.map((item) => ({ type: item.type, pct: Math.max(6, Math.round(item.weight / total * 100)) }));
+    }
+
+    function renderPrediction() {
+      const answered = getAnsweredCount();
+      const predictions = getTypePredictions();
+      const top = predictions[0];
+      const confidence = answered ? Math.min(96, Math.max(12, top.pct + answered * 3)) : 0;
+      predictionCode.textContent = answered ? `${top.type.code} ${confidence}%` : "SBIT ??%";
+      predictionBars.innerHTML = predictions.map((item) => `
+        <div class="prediction-row" style="--p:${answered ? item.pct : 8}%">
+          <em>${item.type.code}</em><i></i><span>${answered ? item.pct : "??"}%</span>
+        </div>
+      `).join("");
+    }
+
+    function updateResultBack(type, scores, answered) {
+      const strongest = Object.entries(scores).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([key, value]) => `${key}:${value}`).join("  ");
+      resultBackTitle.textContent = `${type.code}.stack.trace()`;
+      resultBackLog.textContent = [
+        `$ smellnet inspect --type=${type.code}`,
+        `ResultError: ${type.name} · ${type.percent}`,
+        `    at quiz.answer(${answered}/${questions.length})`,
+        `    at workplace.vector(${strongest || "empty"})`,
+        `    at human.pretendBusy("${type.desc || "等待采样"}")`,
+        `hint: 双击卡片 / 点按钮可翻回正面`,
+        `status: ${answered === questions.length ? "compiled_with_glitch" : "fermenting"}`
+      ].join("\n");
+    }
+
+    function triggerParticleBurst(container, type) {
+      if (!container || !type || type.code === "SBIT") return;
+      const burst = document.createElement("div");
+      burst.className = "particle-burst";
+      const glyphs = [...type.code, "{", "}", "=>", "BUG", "NULL", "TODO", "💀", "//", "404"];
+      for (let index = 0; index < 46; index += 1) {
+        const piece = document.createElement("i");
+        piece.textContent = randomFrom(glyphs);
+        piece.style.setProperty("--dx", `${Math.round((Math.random() - .5) * 360)}px`);
+        piece.style.setProperty("--dy", `${Math.round((Math.random() - .5) * 260)}px`);
+        piece.style.setProperty("--rot", `${Math.round((Math.random() - .5) * 540)}deg`);
+        piece.style.left = `${38 + Math.random() * 24}%`;
+        piece.style.top = `${38 + Math.random() * 24}%`;
+        piece.style.animationDelay = `${Math.random() * .12}s`;
+        burst.appendChild(piece);
+      }
+      container.appendChild(burst);
+      window.setTimeout(() => burst.remove(), 1100);
+    }
+
+    function runResultReveal(type, options = {}) {
+      if (!type || type.code === "SBIT") return;
+      const key = `${type.code}:${getAnsweredCount()}:${options.modal ? "modal" : "card"}`;
+      if (!options.force && key === lastRevealCode) return;
+      lastRevealCode = key;
+      if (options.modal) {
+        resultModalPanel.classList.remove("glitching");
+        void resultModalPanel.offsetWidth;
+        resultModalPanel.classList.add("glitching");
+        triggerParticleBurst(modalArt, type);
+        window.setTimeout(() => resultModalPanel.classList.remove("glitching"), 820);
+        return;
+      }
+      resultCard.classList.remove("glitching");
+      void resultCard.offsetWidth;
+      resultCard.classList.add("glitching");
+      triggerParticleBurst(resultArt, type);
+      window.setTimeout(() => resultCard.classList.remove("glitching"), 820);
+    }
+
+    function toggleResultFlip(force) {
+      const next = typeof force === "boolean" ? force : !resultCard.classList.contains("flipped");
+      resultCard.classList.toggle("flipped", next);
+      resultFlipBtn.textContent = next ? "翻回正面看人格" : "翻到背面看异常栈";
+    }
+
+    function renderQuestion() {
+      state.index = Math.min(Math.max(state.index, 0), questions.length - 1);
+      const current = questions[state.index];
+      const answered = state.answers.filter(answer => answer !== null).length;
+      const pct = Math.round(answered / questions.length * 100);
+      questionEl.textContent = current.text;
+      stepText.textContent = `第 ${state.index + 1} / ${questions.length} 题`;
+      progressBar.style.width = `${pct}%`;
+      entropyText.textContent = `${pct}%`;
+      renderText.textContent = answered === questions.length ? "passed" : `q${String(state.index + 1).padStart(2, "0")}.dirty`;
+      renderPrediction();
+      prevBtn.disabled = state.index === 0;
+      nextBtn.textContent = state.index === questions.length - 1 ? "生成诊断" : "下一题";
+      sampleDock.innerHTML = questions.map((_, index) => `
+        <button class="sample-dot ${state.answers[index] !== null ? "done" : ""} ${index === state.index ? "active" : ""}" type="button" data-index="${index}" aria-label="跳到第 ${index + 1} 题"></button>
+      `).join("");
+      choicesEl.innerHTML = current.choices.map((choice, choiceIndex) => `
+        <button class="choice ${state.answers[state.index] === choiceIndex ? "selected" : ""}" type="button" data-choice="${choiceIndex}" data-hotkey="${choiceIndex + 1}">
+          <b>${choice.title}</b>
+          <small>${choice.note}</small>
+        </button>
+      `).join("");
+    }
+
+    function getScores() {
+      const scores = { M: 0, L: 0, Z: 0, S: 0, D: 0, J: 0, F: 0, R: 0 };
+      state.answers.forEach((answerIndex, questionIndex) => {
+        if (answerIndex === null) return;
+        const score = questions[questionIndex].choices[answerIndex].score;
+        Object.entries(score).forEach(([key, value]) => scores[key] += value);
+      });
+      return scores;
+    }
+
+    function getType(scores) {
+      let best = types[0];
+      let bestDistance = Infinity;
+      types.forEach((type) => {
+        const distance = Object.keys(type.weights).reduce((sum, key) => {
+          const diff = (scores[key] || 0) - type.weights[key];
+          return sum + diff * diff;
+        }, 0);
+        if (distance < bestDistance) {
+          best = type;
+          bestDistance = distance;
+        }
+      });
+      return best;
+    }
+
+    function artPath(type) {
+      const filename = type.code === "SBIT" ? "imfw" : type.code.toLowerCase();
+      return `sbit-assets/${filename}.png`;
+    }
+
+    function artCard(type) {
+      return `<img class="generated-art" src="${artPath(type)}" alt="${type.code} ${type.name} 生成图片" loading="lazy" />`;
+    }
+
+    function getAnsweredCount() {
+      return state.answers.filter(answer => answer !== null).length;
+    }
+
+    function getTypeByCode(code) {
+      return types.find(type => type.code === String(code || "").toUpperCase()) || null;
+    }
+
+    function getSharedTypeFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const hashMatch = window.location.hash.match(/result=([A-Z0-9]+)/i);
+      return getTypeByCode(params.get("result") || params.get("sbit") || (hashMatch && hashMatch[1]));
+    }
+
+    function isSharedResultMode() {
+      return Boolean(sharedType && getAnsweredCount() === 0);
+    }
+
+    function getActiveType() {
+      if (isSharedResultMode()) return sharedType;
+      return getAnsweredCount() ? getType(getScores()) : { code: "SBIT", name: "正在发臭", percent: "??%", sheet: 1, slot: 0, desc: "" };
+    }
+
+    function canSharePublicUrl() {
+      return location.protocol === "http:" || location.protocol === "https:";
+    }
+
+    function buildShareUrl(type = getActiveType()) {
+      if (!canSharePublicUrl()) return "";
+      const url = new URL(window.location.href);
+      url.searchParams.set("result", type.code);
+      url.hash = "sharedView";
+      return url.toString();
+    }
+
+    function syncShareUrl(type = getActiveType()) {
+      if (!type || type.code === "SBIT" || !history.replaceState) return;
+      const url = new URL(window.location.href);
+      url.searchParams.set("result", type.code);
+      url.hash = "sharedView";
+      history.replaceState(null, "", url.toString());
+    }
+
+    function getShareText(type = getActiveType()) {
+      return `我的 SBIT 恶臭程序员人格是 ${type.code}：${type.name} · ${type.percent}。${type.desc}`;
+    }
+
+    function renderSharedView(type) {
+      if (!type) return;
+      document.body.classList.add("shared-mode");
+      sharedArt.innerHTML = artCard(type);
+      sharedCode.textContent = type.code;
+      sharedName.textContent = `${type.name} · ${type.percent}`;
+      sharedDesc.textContent = `朋友发来的精神日志：${type.desc}`;
+      sharedRouteCode.textContent = type.code;
+    }
+
+    async function copyToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "fixed";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.select();
+      const ok = document.execCommand("copy");
+      textarea.remove();
+      if (!ok) throw new Error("copy failed");
+    }
+
+    async function copyResultText() {
+      const type = getActiveType();
+      const url = buildShareUrl(type);
+      const suffix = type.code === "SBIT" ? "" : (url ? `\n直达结果：${url}` : "\n本地 file:// 预览不能生成可分享链接；部署到服务器后再点分享即可复制公网结果页。");
+      return copyToClipboard(`${getShareText(type)}${suffix}`);
+    }
+
+    async function shareResult() {
+      const type = getActiveType();
+      if (type.code === "SBIT") {
+        showToast("先采样，别空手污染朋友圈");
+        return;
+      }
+      const url = buildShareUrl(type);
+      const text = getShareText(type);
+      if (!url) {
+        await copyToClipboard(`${text}\n本地预览不能分享 file:// 地址；部署到 GitHub Pages / Vercel / Netlify 后会自动复制公网链接。`);
+        showToast("本地预览不能生成公网链接，已复制部署提示");
+        return;
+      }
+      syncShareUrl(type);
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: "SBIT 恶臭程序员人格", text, url });
+          showToast("已唤起系统分享");
+          return;
+        } catch (error) {
+          if (error && error.name === "AbortError") return;
+        }
+      }
+      await copyToClipboard(`${text}\n${url}`);
+      showToast("分享链接已复制，朋友打开直接看结果");
+    }
+
+    function updatePipeline() {
+      const answered = getAnsweredCount();
+      const activeType = getActiveType();
+      const pct = Math.round(answered / questions.length * 100);
+      const now = new Date().toLocaleTimeString("zh-CN", { hour12: false });
+      if (isSharedResultMode()) {
+        pipelineStatus.textContent = "share imported";
+        pipelineLog.innerHTML = `
+          <div><span>${now}</span> <code>GET</code> /sbit?result=<b>${activeType.code}</b></div>
+          <div><span>${now}</span> import-result --source=friend.link --trust=false</div>
+          <div><span>${now}</span> hydrate-card sbit-assets/${activeType.code.toLowerCase()}.png</div>
+          <div><span>${now}</span> render-shared-view --cta=sample-yourself</div>
+          <div><span>${now}</span> share_chain="继续污染下一个群"</div>
+        `;
+        return;
+      }
+      const lastIndex = state.answers.map((answer, index) => answer !== null ? index : -1).filter(index => index >= 0).pop();
+      const lastChoice = lastIndex === undefined ? null : questions[lastIndex].choices[state.answers[lastIndex]];
+      const predictions = getTypePredictions();
+      pipelineStatus.textContent = answered === questions.length ? "build passed · glitch reveal" : `sampling ${pct}% · terminal live`;
+      pipelineLog.innerHTML = `
+        <div><span>${now}</span> pnpm smell:test --sample=${answered}/${questions.length} --mode=terminal</div>
+        <div><span>${now}</span> stream entropy=${pct}% heap=精神碎片/${Math.max(1, answered * 13)}MB</div>
+        <div><span>${now}</span> infer-type <b>${activeType.code}</b> --suspect=${predictions.map(item => item.type.code).join("|")}</div>
+        <div><span>${now}</span> lint workplace --rules=moyu,zhuangmang,toilet,anti-pua</div>
+        <div><span>${now}</span> rain.inject tokens=[TODO,JIRA,NULL,周五发版]</div>
+        <div><span>${now}</span> ${lastChoice ? `last_commit="${lastChoice.title}"` : "waiting for first dirty commit..."}</div>
+      `;
+    }
+
+    function openResultModal(type = getActiveType(), options = {}) {
+      modalCode.textContent = type.code;
+      modalName.textContent = `${type.name} · ${type.percent}`;
+      modalDesc.textContent = options.fromShare ? `朋友发来的恶臭结果：${type.desc}` : (type.desc || "采样尚未完成，恶臭模型仍在预热。");
+      modalArt.innerHTML = artCard(type);
+      if ((getAnsweredCount() === questions.length || options.fromShare) && type.code !== "SBIT") syncShareUrl(type);
+      resultModal.classList.add("show");
+      document.body.style.overflow = "hidden";
+      runResultReveal(type, { modal: true, force: true });
+    }
+
+    function closeResultModal() {
+      resultModal.classList.remove("show");
+      document.body.style.overflow = "";
+    }
+
+    function openImageModal(src, alt) {
+      imageModalImg.src = src;
+      imageModalImg.alt = alt || "放大的恶臭程序员图片";
+      imageModal.classList.add("show");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeImageModal() {
+      imageModal.classList.remove("show");
+      imageModalImg.src = "";
+      document.body.style.overflow = resultModal.classList.contains("show") ? "hidden" : "";
+    }
+
+    function renderResult() {
+      const answered = getAnsweredCount();
+      const sharedMode = isSharedResultMode();
+      const activeType = getActiveType();
+      const scores = sharedMode ? activeType.weights : getScores();
+      resultCode.textContent = activeType.code;
+      resultCode.dataset.text = activeType.code;
+      resultName.textContent = sharedMode ? `${activeType.name} · ${activeType.percent} · 分享直达` : (answered === questions.length ? `${activeType.name} · ${activeType.percent}` : `${activeType.name} · 发酵中`);
+      resultDesc.textContent = sharedMode ? `你打开的是朋友的恶臭链接：${activeType.desc}` : (answered === questions.length ? activeType.desc : `已采样 ${answered} / ${questions.length}。继续回答，系统会把你的上班恶臭压缩成一个离谱短词。`);
+      resultArt.innerHTML = artCard(activeType);
+      updateResultBack(activeType, scores, answered);
+      if (answered === questions.length && !sharedMode) runResultReveal(activeType);
+
+      const max = Math.max(1, ...Object.values(scores));
+      const rows = [
+        ["M 摸鱼", scores.M], ["L 劳模", scores.L], ["Z 装忙", scores.Z], ["S 清醒", scores.S],
+        ["D 躲厕所", scores.D], ["J 假性卷", scores.J], ["F 反骨", scores.F], ["R 认命", scores.R]
+      ];
+      traits.innerHTML = rows.map(([label, value]) => `
+        <div class="trait" style="--value:${Math.max(8, Math.round(value / max * 100))}%">
+          <span><em>${label}</em><strong>${value}</strong></span><i></i>
+        </div>
+      `).join("");
+      updatePipeline();
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.setTimeout(() => toast.classList.remove("show"), 1600);
+    }
+
+    choicesEl.addEventListener("click", (event) => {
+      const button = event.target.closest(".choice");
+      if (!button) return;
+      const wasLastQuestion = state.index === questions.length - 1;
+      state.answers[state.index] = Number(button.dataset.choice);
+      quizPanel.classList.remove("answer-flash");
+      void quizPanel.offsetWidth;
+      quizPanel.classList.add("answer-flash");
+      renderQuestion();
+      renderResult();
+      if (wasLastQuestion && getAnsweredCount() === questions.length) {
+        sharedType = null;
+        syncShareUrl(getActiveType());
+        window.setTimeout(() => openResultModal(getActiveType()), 260);
+        return;
+      }
+      if (state.index < questions.length - 1) {
+        window.clearTimeout(advanceTimer);
+        advanceTimer = window.setTimeout(() => {
+          state.index = Math.min(questions.length - 1, state.index + 1);
+          renderQuestion();
+        }, 180);
+      }
+    });
+
+    sampleDock.addEventListener("click", (event) => {
+      const dot = event.target.closest(".sample-dot");
+      if (!dot) return;
+      state.index = Number(dot.dataset.index);
+      renderQuestion();
+    });
+
+    prevBtn.addEventListener("click", () => {
+      state.index = Math.max(0, state.index - 1);
+      renderQuestion();
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (state.index < questions.length - 1) {
+        state.index += 1;
+        renderQuestion();
+      } else if (state.answers.some(answer => answer === null)) {
+        const firstEmpty = state.answers.findIndex(answer => answer === null);
+        state.index = firstEmpty;
+        renderQuestion();
+        showToast("样本没采完，别急着下班");
+      } else {
+        openResultModal(getActiveType());
+      }
+    });
+
+    resetBtn.addEventListener("click", () => {
+      state.index = 0;
+      state.answers.fill(null);
+      sharedType = null;
+      if (history.replaceState) history.replaceState(null, "", `${location.pathname}${location.hash === "#quiz" ? "#quiz" : ""}`);
+      closeResultModal();
+      closeImageModal();
+      lastRevealCode = "";
+      toggleResultFlip(false);
+      renderQuestion();
+      renderResult();
+      showToast("罪证已清空");
+    });
+
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await copyResultText();
+        showToast("诊断单已复制");
+      } catch (error) {
+        showToast("复制失败，但丧气保留");
+      }
+    });
+
+    modalCopyBtn.addEventListener("click", async () => {
+      try {
+        await copyResultText();
+        showToast("弹窗诊断单已复制，含直达链接");
+      } catch (error) {
+        showToast("复制失败，但丧气保留");
+      }
+    });
+
+    shareBtn.addEventListener("click", () => shareResult().catch(() => showToast("分享失败，但恶臭还在")));
+    modalShareBtn.addEventListener("click", () => shareResult().catch(() => showToast("分享失败，但恶臭还在")));
+    resultFlipBtn.addEventListener("click", () => toggleResultFlip());
+    resultBackBtn.addEventListener("click", () => toggleResultFlip(false));
+    resultCard.addEventListener("dblclick", () => toggleResultFlip());
+    resultCard.addEventListener("pointermove", (event) => {
+      if (resultCard.classList.contains("flipped")) return;
+      const rect = resultCard.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width - .5;
+      const y = (event.clientY - rect.top) / rect.height - .5;
+      resultCard.style.transform = `rotateX(${-y * 5}deg) rotateY(${x * 7}deg) translateZ(0)`;
+    });
+    resultCard.addEventListener("pointerleave", () => {
+      resultCard.style.transform = "";
+    });
+    sharedStartBtn.addEventListener("click", () => {
+      sharedType = null;
+      document.body.classList.remove("shared-mode");
+      resetBtn.click();
+      document.querySelector("#quiz").scrollIntoView({ block: "start" });
+      showToast("开始采你自己的恶臭样本");
+    });
+
+    modalRetestBtn.addEventListener("click", () => resetBtn.click());
+    resultModalClose.addEventListener("click", closeResultModal);
+    imageModalClose.addEventListener("click", closeImageModal);
+    eggModalClose.addEventListener("click", () => {
+      eggModal.classList.remove("show");
+      document.body.style.overflow = "";
+    });
+
+    resultModal.addEventListener("click", (event) => {
+      if (event.target === resultModal) closeResultModal();
+    });
+
+    imageModal.addEventListener("click", (event) => {
+      if (event.target === imageModal) closeImageModal();
+    });
+
+    eggModal.addEventListener("click", (event) => {
+      if (event.target === eggModal) {
+        eggModal.classList.remove("show");
+        document.body.style.overflow = "";
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      const image = event.target.closest(".generated-art");
+      if (!image || image.closest("#imageModal") || image.closest(".mood-card")) return;
+      openImageModal(image.currentSrc || image.src, image.alt);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeImageModal();
+        closeResultModal();
+        eggModal.classList.remove("show");
+        document.body.style.overflow = "";
+      }
+      if (/^[1-4]$/.test(event.key) && !resultModal.classList.contains("show") && !imageModal.classList.contains("show")) {
+        const button = choicesEl.querySelector(`[data-choice="${Number(event.key) - 1}"]`);
+        if (button) button.click();
+      }
+      if (event.key === "ArrowLeft" && !resultModal.classList.contains("show")) prevBtn.click();
+      if (event.key === "ArrowRight" && !resultModal.classList.contains("show")) nextBtn.click();
+      if (event.key === "Enter" && getAnsweredCount() === questions.length && !resultModal.classList.contains("show")) {
+        openResultModal(getActiveType());
+      }
+    });
+
+    typeGrid.innerHTML = types.map((type) => {
+      return `<article class="type-card"><span class="type-code">${type.code}</span><h3>${type.name} · ${type.percent}</h3><p>${type.desc}</p><div class="tiny-art">${artCard(type)}</div></article>`;
+    }).join("");
+    startCodeRain();
+    renderMoodWall();
+
+    sharedType = getSharedTypeFromUrl();
+    renderQuestion();
+    renderResult();
+    if (sharedType) {
+      renderSharedView(sharedType);
+      window.setTimeout(() => {
+        sharedView.scrollIntoView({ block: "start" });
+        showToast("已载入朋友的恶臭结果，来采你自己的");
+      }, 360);
+    }
+  </script>
+</body>
+</html>
