@@ -4,6 +4,12 @@
 
 > 本项目仅供娱乐与前端交互实验，不是心理测评、职业诊断或严肃人格分类。
 
+## 在线访问
+
+- 在线体验：<https://scarea.github.io/sbti/>
+- 原创仓库：<https://github.com/scarea/sbti>
+- 示例分享页：<https://scarea.github.io/sbti/?result=RAGE#sharedView>
+
 ## 在线内容
 
 - 30 道恶臭采样题库，每次随机抽 12 题
