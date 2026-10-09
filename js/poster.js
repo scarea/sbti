@@ -150,15 +150,15 @@
 
     // Rarity sticker
     ctx.save();
-    ctx.translate(W - 250, ay + ah - 40);
+    ctx.translate(W - 360, ay + ah - 40);
     ctx.rotate(-.08);
     ctx.fillStyle = "#ff4f9a";
-    roundRect(ctx, 0, 0, 220, 76, 38);
+    roundRect(ctx, 0, 0, 320, 76, 38);
     ctx.fill();
     ctx.fillStyle = "#fff";
     ctx.font = `900 30px ${FONT}`;
     ctx.textAlign = "center";
-    ctx.fillText(`出现率 ${rarity}`, 110, 40);
+    ctx.fillText(rarity, 160, 40);
     ctx.restore();
 
     // Code + name

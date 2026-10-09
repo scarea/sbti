@@ -27,9 +27,11 @@
 
     function measure() {
       const width = stage.clientWidth;
-      const cw = Math.round(Math.max(92, Math.min(170, width * .17)));
+      const cw = Math.round(Math.max(86, Math.min(count > 16 ? 140 : 170, width * (count > 16 ? .14 : .17))));
       const ch = Math.round(cw * 392 / 418);
-      const radius = Math.round(Math.max(cw * 2.75, Math.min(width * .5, cw * 3.3)));
+      // Circumference must fit every card with a small gap.
+      const minRadius = cw * 1.12 * count / (2 * Math.PI);
+      const radius = Math.round(Math.max(minRadius, Math.min(width * .5, minRadius * 1.15)));
       stage.style.setProperty("--cw", `${cw}px`);
       stage.style.setProperty("--ch", `${ch}px`);
       stage.style.setProperty("--fr", `${radius + cw * .7}px`);
