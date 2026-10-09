@@ -6,7 +6,7 @@
   const signatures = window.SBIT_SIGNATURES || {};
   const pairs = window.SBIT_PAIRS || {};
   const SAMPLE_SIZE = 12;
-  const DIM_LABELS = { M: "摸鱼", L: "劳模", Z: "装忙", S: "清醒", D: "躲避", J: "假卷", F: "反骨", R: "认命" };
+  const DIM_LABELS = { M: "摸鱼", L: "劳模", Z: "装忙", S: "清醒", D: "躲避", J: "假卷", F: "反骨", R: "认命", A: "AI味" };
   const typeByCode = Object.fromEntries(types.map((type) => [type.code, type]));
   const root = document.documentElement;
 
@@ -83,10 +83,10 @@
 
   // ---------- rarity tiers + collection ----------
   const TIERS = [
-    { key: "UR", max: 1.8, color: "#ff4f9a", label: "传说馊味" },
-    { key: "SSR", max: 2.75, color: "#ffd84d", label: "极品馊味" },
-    { key: "SR", max: 3.8, color: "#c77dff", label: "稀有馊味" },
-    { key: "R", max: 5.5, color: "#5ab8ff", label: "常见馊味" },
+    { key: "UR", max: 1.5, color: "#ff4f9a", label: "传说馊味" },
+    { key: "SSR", max: 2.0, color: "#ffd84d", label: "极品馊味" },
+    { key: "SR", max: 2.9, color: "#c77dff", label: "稀有馊味" },
+    { key: "R", max: 3.9, color: "#5ab8ff", label: "常见馊味" },
     { key: "N", max: Infinity, color: "#9a9a8a", label: "大众馊味" }
   ];
   const tierOf = (type) => TIERS.find((tier) => (rarity[type.code] || 0) <= tier.max);
@@ -159,7 +159,7 @@
     const canvas = $("#codeRain");
     if (!canvas.getContext || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const ctx = canvas.getContext("2d");
-    const tokens = ["TODO", "JIRA", "404", "NULL", "wontfix", "git push -f", "prod", "P0", "moyu", "OKOK", "LGTM", "CRUD", "npm i", "咖啡", "开会", "摸鱼", "带薪", "需求变更", "rollback", "on-call", "对齐", "闭环"];
+    const tokens = ["TODO", "JIRA", "404", "NULL", "wontfix", "git push -f", "prod", "P0", "moyu", "OKOK", "LGTM", "CRUD", "npm i", "咖啡", "开会", "摸鱼", "带薪", "需求变更", "rollback", "on-call", "对齐", "闭环", "Tab", "Accept All", "prompt", "token", "vibe", "AI 写的", "幻觉", "Agent", "503", "上下文超限", "重新生成"];
     let columns = [];
     let last = 0;
     function resize() {
@@ -268,6 +268,8 @@
     });
     return svg;
   }
+  // How far the A (AI reliance) axis sits from random answering, mapped to a playful 1–99%.
+  const aiPercent = (z) => Math.max(1, Math.min(99, Math.round(50 + (z.A || 0) * 18)));
   const zToRadar = (z) => engine.DIMS.map((key) => Math.max(.08, Math.min(1, .5 + z[key] / 5)));
   const weightsToRadar = (type) => engine.DIMS.map((key) => Math.max(.08, type.weights[key] / 9));
 
@@ -317,7 +319,7 @@
       <div class="detail-modal">
         <div class="dm-art tilt" data-tilt-max="12"><img src="${artPath(type)}" alt="${type.code} ${escapeHtml(type.name)}" /></div>
         <div class="dm-copy">
-          <div class="badge-row">${tierChip(type)}<span class="badge">出现率 ${rarityText(type)}</span>${collection.has(type.code) ? '<span class="badge badge-ghost">✓ 已收集</span>' : ""}</div>
+          <div class="badge-row">${tierChip(type)}<span class="badge">出现率 ${rarityText(type)}</span><span class="badge badge-ghost">🤖 AI 依赖 ${type.weights.A ?? 0}/9</span>${collection.has(type.code) ? '<span class="badge badge-ghost">✓ 已收集</span>' : ""}</div>
           <h2 class="glitch-code">${type.code}</h2>
           <h3>${escapeHtml(type.name)}</h3>
           <p class="result-tagline">${escapeHtml(type.tagline || "")}</p>
@@ -520,15 +522,15 @@
     const avg = quiz.times.reduce((a, b) => a + (b || 0), 0) / quiz.times.length;
     const positions = quiz.answers.map((answer, i) => quiz.order[i].indexOf(answer));
     if (avg < 1000) {
-      egg = `⚡ 隐藏判定：平均 ${(avg / 1000).toFixed(1)} 秒一题，你根本没看题。系统强制把你判为 PUSH：先提交，再说。`;
-      type = typeByCode.PUSH || type;
+      egg = `⚡ 隐藏判定：平均 ${(avg / 1000).toFixed(1)} 秒一题，题都没看就 Accept All。系统强制把你判为 VIBE：感觉对了就行。`;
+      type = typeByCode.VIBE || typeByCode.PUSH || type;
     } else if (positions.every((p) => p === positions[0])) {
       egg = `🎯 彩蛋：你 12 题全选了 ${"ABCD"[positions[0]]}。选项顺序是随机打乱的，所以你是真·随缘型选手。`;
     }
-    runBuild(type, () => showResult({ type, ranked, z, egg }));
+    runBuild(type, z, () => showResult({ type, ranked, z, egg }));
   }
 
-  function runBuild(type, done) {
+  function runBuild(type, z, done) {
     const build = $("#build");
     const log = $("#buildLog");
     build.hidden = false;
@@ -536,7 +538,8 @@
     const lines = [
       "<em>$</em> npm run diagnose --sample=12",
       "  ✓ 读取 12 条工位气味样本",
-      "  ✓ 归一化 8 维馊味向量",
+      `  ✓ 归一化 ${engine.DIMS.length} 维馊味向量`,
+      `  ✓ 检测代码 AI 含量：<b>${aiPercent(z)}%</b>`,
       `  ✓ 与 ${types.length} 种人格做余弦匹配`,
       "  ⚠ warning: 检测到大量摸鱼残留",
       `  ✓ 最高相似度命中 <b>${type.code}</b>`,
@@ -570,6 +573,9 @@
     $("#resultArt").innerHTML = `<img src="${artPath(type)}" alt="${type.code} ${escapeHtml(type.name)}" />`;
     const tier = tierOf(type);
     $("#resultRarity").textContent = `${tier.key} · 出现率 ${rarityText(type)}`;
+    const ai = aiPercent(z);
+    $("#resultAi").textContent = `🤖 代码 AI 含量 ${ai}%`;
+    $("#resultAi").title = ai >= 80 ? "离了 AI 你还能写吗" : ai <= 20 ? "古法编程，失传手艺" : "人机混合，责任难分";
     const badge = $("#resultTier");
     badge.textContent = tier.key;
     badge.className = `tier-badge tier-${tier.key}`;
@@ -577,7 +583,7 @@
     $("#tcardCode").textContent = type.code;
     $("#tcardName").textContent = type.name;
     $("#tcardBackCode").textContent = type.code;
-    $("#tcardBackRarity").textContent = `${tier.key} · ${rarityText(type)}`;
+    $("#tcardBackRarity").textContent = `${tier.key} · ${rarityText(type)} · AI ${aiPercent(z)}%`;
     $("#tcardBackQuote").textContent = `“${(type.catchphrases || [""])[0]}”`;
     $("#tcardNo").textContent = String(types.indexOf(type) + 1).padStart(2, "0");
     $("#tcardRadar").innerHTML = radarSvg(zToRadar(z));
@@ -914,6 +920,10 @@
       if (typed === "sudo") { typed = ""; openEgg(); }
     }
   });
+
+  // Losing the network is the ultimate AIFW test.
+  window.addEventListener("offline", () => toast("🔌 断网了：现在是检验你离了 AI 是不是废物的时刻"));
+  window.addEventListener("online", () => toast("🛜 网回来了，AI 也回来了，你又行了"));
 
   if (sharedType) toast("朋友给你发来了一份馊味报告");
 })();

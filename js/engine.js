@@ -1,6 +1,6 @@
 // SBIT scoring engine. Shared by the page (window.SBIT_ENGINE) and scripts/calibrate.mjs (module.exports).
 (function (root) {
-  const DIMS = ["M", "L", "Z", "S", "D", "J", "F", "R"];
+  const DIMS = ["M", "L", "Z", "S", "D", "J", "F", "R", "A"]; // A = AI 依赖
 
   // Seeded PRNG so rarity numbers are stable across page loads.
   function mulberry32(seed) {

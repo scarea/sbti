@@ -1,5 +1,5 @@
 // 题库：每次随机抽 12 题，选项顺序也会被打乱。每题恰好 4 个选项。
-// score 维度：M 摸鱼 L 劳模 Z 装忙 S 清醒 D 躲避 J 假性卷 F 反骨 R 认命
+// score 维度：M 摸鱼 L 劳模 Z 装忙 S 清醒 D 躲避 J 假性卷 F 反骨 R 认命 A AI 依赖
 // 新增 quip 字段：选中后弹出的一句即时吐槽（≤18 字）。
 window.SBIT_QUESTION_BANK = [
   {
@@ -33,9 +33,9 @@ window.SBIT_QUESTION_BANK = [
     text: "下午三点灵魂掉线，你会把自己移交给？",
     choices: [
       { title: "厕所隔间", note: "公司最后一块未被排期污染的圣地。", quip: "坑位即主权领土。", score: { D: 3 } },
-      { title: "技术文章收藏夹", note: "看标题就算学习，收藏就算精通。", quip: "收藏夹：知识的乱葬岗。", score: { M: 2, Z: 1 } },
+      { title: "AI 课程收藏夹", note: "看标题就算学习，收藏就算精通。", quip: "收藏夹：知识的乱葬岗。", score: { M: 2, A: 1 } },
       { title: "咖啡因和肌肉记忆", note: "人不在，手还会敲。", quip: "手比脑子更敬业。", score: { L: 2, J: 1 } },
-      { title: "一个用来偷懒的自动化脚本", note: "懒不是缺陷，是架构思想。", quip: "懒惰驱动的架构师。", score: { S: 2, F: 1 } }
+      { title: "一个替我干活的 AI Agent", note: "懒不是缺陷，是架构思想。", quip: "懒惰驱动的架构师。", score: { S: 2, A: 1 } }
     ]
   },
   {
@@ -62,7 +62,7 @@ window.SBIT_QUESTION_BANK = [
       { title: "小？那你自己写？", note: "反骨从括号里长出来。", quip: "括号里的怒火正在编译。", score: { F: 2, S: 1 } },
       { title: "又要改数据结构了", note: "小改动，大地震。", quip: "震源深度：数据库。", score: { S: 2, L: 1 } },
       { title: "先答应，回去评估怎么拖", note: "缓冲区是成年人的尊严。", quip: "成年人的 buffer 很大。", score: { M: 2, R: 1 } },
-      { title: "做一版能演示的幻觉", note: "Demo 不是产品，是魔术。", quip: "请勿刷新，会穿帮。", score: { Z: 2, J: 1 } }
+      { title: "让 AI 糊一版能演示的幻觉", note: "Demo 不是产品，是魔术。", quip: "请勿刷新，会穿帮。", score: { Z: 2, A: 1 } }
     ]
   },
   {
@@ -87,7 +87,7 @@ window.SBIT_QUESTION_BANK = [
     text: "你写 CRUD 后台时最大的感受是？",
     choices: [
       { title: "我是一台表单复读机", note: "增删改查，查改删增。", quip: "复读到第 87 个字段了。", score: { L: 2, R: 1 } },
-      { title: "能不能自动生成后我去躺一下", note: "重复劳动会污染人格。", quip: "代码生成器才是真同事。", score: { M: 2, F: 1 } },
+      { title: "让 AI 生成，我去躺一下", note: "重复劳动会污染人格。", quip: "代码生成器才是真同事。", score: { M: 2, A: 1 } },
       { title: "字段名像产品随手撒的米", note: "命名不是沟通，是占卜。", quip: "字段 a1、a2、a2_new。", score: { S: 2, F: 1 } },
       { title: "截图进日报：完成核心能力建设", note: "把表格包装成平台化。", quip: "一张表撑起一个中台。", score: { Z: 2, J: 1 } }
     ]
@@ -97,7 +97,7 @@ window.SBIT_QUESTION_BANK = [
     choices: [
       { title: "持续推进体", note: "什么都没说，但像干了很多。", quip: "推进了，往哪推不重要。", score: { Z: 2, M: 1 } },
       { title: "历史遗留受难体", note: "修 bug 像替前人还债。", quip: "父债子还，前任债你还。", score: { L: 2, R: 1 } },
-      { title: "效率优化自嗨体", note: "其实是为了更高级地偷懒。", quip: "偷懒的尽头是优化。", score: { M: 2, S: 1 } },
+      { title: "效率优化自嗨体", note: "让 AI 写，更高级地偷懒。", quip: "偷懒的尽头是优化。", score: { M: 2, A: 1 } },
       { title: "流程风险阴阳体", note: "翻译：你们这样迟早出事。", quip: "预言家已发言。", score: { F: 2, S: 1 } }
     ]
   },
@@ -177,7 +177,7 @@ window.SBIT_QUESTION_BANK = [
     text: "需求评审开到一半，你发现没人知道自己在说什么，你会？",
     choices: [
       { title: "认真记下所有废话", note: "会议纪要也是一种考古。", quip: "废话也是数据资产。", score: { R: 2, L: 1 } },
-      { title: "开小窗刷文档", note: "在无意义里偷一点有意义。", quip: "小窗：会议室的逃生舱。", score: { M: 2, S: 1 } },
+      { title: "开小窗跟 AI 聊天", note: "在无意义里偷一点有意义。", quip: "小窗：会议室的逃生舱。", score: { M: 2, A: 1 } },
       { title: "提出关键问题让全场沉默", note: "反骨但有效。", quip: "你成功让会议提前结束。", score: { F: 2, S: 1 } },
       { title: "点头并说我没问题", note: "装作系统兼容所有输入。", quip: "输入：废话，输出：好的。", score: { Z: 2, R: 1 } }
     ]
@@ -205,7 +205,7 @@ window.SBIT_QUESTION_BANK = [
     choices: [
       { title: "摄像头关掉，灵魂下线", note: "只保留最低限度的人类接口。", quip: "只剩一个灰色头像在开会。", score: { M: 2, D: 1 } },
       { title: "主动同步风险", note: "让会议知道自己不是免费的。", quip: "会议成本已计入工时。", score: { S: 2, J: 1 } },
-      { title: "做一页会后总结", note: "把痛苦产品化。", quip: "痛苦也能出 PPT。", score: { Z: 2, J: 1 } },
+      { title: "让 AI 生成会后总结", note: "把痛苦产品化。", quip: "痛苦也能出 PPT。", score: { Z: 2, A: 1 } },
       { title: "接受命运，继续点头", note: "头会动，人不会。", quip: "点头机已稳定运行。", score: { R: 2, Z: 1 } }
     ]
   },
@@ -221,9 +221,9 @@ window.SBIT_QUESTION_BANK = [
   {
     text: "你打开 IDE 的第一分钟，最像哪种状态？",
     choices: [
-      { title: "插件更新，人生暂停", note: "先等工具替我拖延。", quip: "进度条是合法的摸鱼。", score: { M: 2, Z: 1 } },
+      { title: "等 AI 插件加载，人生暂停", note: "先等工具替我拖延。", quip: "进度条是合法的摸鱼。", score: { M: 2, A: 1 } },
       { title: "直接跑测试", note: "用失败唤醒今天。", quip: "红色是今天的第一杯咖啡。", score: { L: 2, S: 1 } },
-      { title: "看昨天留下的 TODO", note: "像看前世欠条。", quip: "昨天的你真不是东西。", score: { R: 2, D: 1 } },
+      { title: "先问 AI 我昨天干了啥", note: "它的记性比我好。", quip: "外置记忆已加载。", score: { A: 2, R: 1 } },
       { title: "先换主题和字体", note: "代码没变，但心情重构了。", quip: "重构了审美，没重构代码。", score: { Z: 2, M: 1 } }
     ]
   },
@@ -241,7 +241,7 @@ window.SBIT_QUESTION_BANK = [
     choices: [
       { title: "日志", note: "它冷漠，但一般不撒谎。", quip: "日志：我只陈述事实。", score: { S: 2, L: 1 } },
       { title: "橡皮鸭", note: "至少它不会插需求。", quip: "鸭鸭是最好的同事。", score: { D: 2, S: 1 } },
-      { title: "十年前的论坛旧回答", note: "考古也是研发的一部分。", quip: "楼主：已解决，没说怎么。", score: { L: 2, J: 1 } },
+      { title: "AI 聊天框，问到它道歉", note: "它不嫌我烦，我也不嫌它。", quip: "「你说得对」第 9 次。", score: { A: 2, L: 1 } },
       { title: "玄学重启", note: "科学尽头是重开。", quip: "重启解决 80% 的人生。", score: { M: 2, R: 1 } }
     ]
   },
@@ -276,7 +276,7 @@ window.SBIT_QUESTION_BANK = [
     text: "Code Review 收到 37 条评论，其中 30 条是“这里加个空行”，你会？",
     choices: [
       { title: "逐条回复“已改”", note: "每一条都是对尊严的格式化。", quip: "你被 Prettier 化了。", score: { R: 2, L: 1 } },
-      { title: "提议上 lint，从此闭嘴", note: "用机器终结人类的审美战争。", quip: "工具理性战胜了强迫症。", score: { S: 2, J: 1 } },
+      { title: "提议上 lint，从此闭嘴", note: "用机器终结人类的审美战争。", quip: "工具理性战胜了强迫症。", score: { S: 2, A: 1 } },
       { title: "反手给他的 PR 提 40 条", note: "以空行还空行。", quip: "冤冤相报何时了。", score: { F: 2, Z: 1 } },
       { title: "假装没看到通知", note: "PR 先晾三天再说。", quip: "PR 在风中风干。", score: { D: 2, M: 1 } }
     ]
@@ -293,10 +293,10 @@ window.SBIT_QUESTION_BANK = [
   {
     text: "AI 帮你写了一段能跑的代码，但你完全看不懂，你会？",
     choices: [
-      { title: "能跑就提交，祈祷", note: "我和 AI 都不负责。", quip: "责任主体：玄学。", score: { M: 2, R: 1 } },
-      { title: "逐行审一遍再用", note: "AI 也是会写 bug 的实习生。", quip: "你在给 AI 做代码审查。", score: { S: 2, L: 1 } },
-      { title: "周报写：引入 AI 提效 300%", note: "提的是周报的效。", quip: "提效主要体现在 PPT。", score: { Z: 2, J: 1 } },
-      { title: "开始担心自己被替代", note: "它写得比我快，还不要工资。", quip: "它也不会摸鱼，可怕。", score: { R: 2, D: 1 } }
+      { title: "能跑就提交，祈祷", note: "我和 AI 都不负责。", quip: "责任主体：玄学。", score: { A: 2, M: 1 } },
+      { title: "逐行审一遍再用", note: "AI 也是会写 bug 的实习生。", quip: "你在给 AI 做代码审查。", score: { S: 2, A: 1 } },
+      { title: "周报写：引入 AI 提效 300%", note: "提的是周报的效。", quip: "提效主要体现在 PPT。", score: { Z: 2, A: 1 } },
+      { title: "开始担心自己被替代", note: "它写得比我快，还不要工资。", quip: "它也不会摸鱼，可怕。", score: { R: 2, A: 1 } }
     ]
   },
   {
@@ -305,7 +305,7 @@ window.SBIT_QUESTION_BANK = [
       { title: "在排查一个比较深的问题", note: "深到我自己都没找到。", quip: "深度摸鱼，深度排查。", score: { Z: 2, M: 1 } },
       { title: "和昨天一样，没有阻塞", note: "复读是最安全的汇报。", quip: "站会复读机已就位。", score: { R: 2, Z: 1 } },
       { title: "实话：昨天在开会", note: "我没干活，是因为你们在开会。", quip: "一句话点名全场。", score: { F: 2, D: 1 } },
-      { title: "站会前五分钟紧急干了点", note: "临时抱佛脚，佛也被我卷到了。", quip: "五分钟能干一天的活。", score: { J: 2, L: 1 } }
+      { title: "站会前五分钟让 AI 赶了点", note: "临时抱佛脚，佛也被我卷到了。", quip: "五分钟能干一天的活。", score: { J: 2, A: 1 } }
     ]
   },
   {
@@ -313,7 +313,7 @@ window.SBIT_QUESTION_BANK = [
     choices: [
       { title: "0.7，懂的都懂", note: "太高被质疑，太低被约谈。", quip: "精准落在安全区。", score: { S: 2, R: 1 } },
       { title: "1.0，并附 15 页证明", note: "证据比成果多。", quip: "附件比正文厚。", score: { J: 2, Z: 1 } },
-      { title: "随便打，反正领导会改", note: "自评是一种行为艺术。", quip: "自评：仅供参考。", score: { R: 2, M: 1 } },
+      { title: "让 AI 写自评，随便打", note: "自评是一种行为艺术。", quip: "自评：仅供参考。", score: { R: 2, A: 1 } },
       { title: "我的 O 是活着，K 是不疯", note: "达成率 100%。", quip: "人生 OKR 满分。", score: { F: 2, D: 1 } }
     ]
   },
@@ -321,7 +321,7 @@ window.SBIT_QUESTION_BANK = [
     text: "年终述职 PPT 写到第 3 页，发现今年好像没干啥，你会？",
     choices: [
       { title: "把修 bug 包装成稳定性治理", note: "措辞即生产力。", quip: "你是语言的魔术师。", score: { Z: 3 } },
-      { title: "通宵补一个能讲的项目", note: "临时造一座政绩工程。", quip: "连夜赶工的面子工程。", score: { J: 2, L: 1 } },
+      { title: "让 AI 连夜补个能讲的项目", note: "临时造一座政绩工程。", quip: "连夜赶工的面子工程。", score: { J: 2, A: 1 } },
       { title: "老实写：主要在维护", note: "维护也是一种功劳，虽然没人信。", quip: "诚实是职场稀缺资源。", score: { L: 2, D: 1 } },
       { title: "开始更新简历", note: "述职不如述给下一家。", quip: "简历才是真正的年终总结。", score: { D: 2, J: 1 } }
     ]
@@ -356,7 +356,7 @@ window.SBIT_QUESTION_BANK = [
   {
     text: "中午点外卖，你选餐的逻辑是？",
     choices: [
-      { title: "随便，和昨天一样", note: "人生已经够多选择题了。", quip: "外卖界的复读机。", score: { R: 2, M: 1 } },
+      { title: "问 AI 中午吃什么", note: "人生已经够多选择题了。", quip: "外卖界的复读机。", score: { R: 2, A: 1 } },
       { title: "挑最快送到的，吃完继续干", note: "吃饭是一种充电。", quip: "你把自己当成充电宝。", score: { L: 2, J: 1 } },
       { title: "研究满减凑单半小时", note: "饭钱省三块，工时花半天。", quip: "摸鱼和省钱同时达成。", score: { M: 2, D: 1 } },
       { title: "约同事一起出去吃，吃两小时", note: "午休是人权，延长是艺术。", quip: "午饭吃成了下午茶。", score: { F: 2, D: 1 } }
@@ -375,7 +375,7 @@ window.SBIT_QUESTION_BANK = [
     text: "新同事第五次来问你同一个问题，你会？",
     choices: [
       { title: "耐心再讲一遍", note: "我也曾是那个人。", quip: "职场活菩萨。", score: { L: 2, R: 1 } },
-      { title: "甩一个文档链接", note: "文档在那，自己悟。", quip: "链接是最礼貌的拒绝。", score: { S: 2, J: 1 } },
+      { title: "回一句：你问过 AI 吗", note: "AI 不嫌烦，我嫌。", quip: "最礼貌的拒绝。", score: { S: 2, A: 1 } },
       { title: "组织一场新人培训分享会", note: "顺便写进述职材料。", quip: "带教亮点 +1。", score: { J: 2, Z: 1 } },
       { title: "假装在开会", note: "耳机一戴，谁也不爱。", quip: "会议中，勿扰，永远。", score: { D: 2, M: 1 } }
     ]
@@ -385,7 +385,7 @@ window.SBIT_QUESTION_BANK = [
     choices: [
       { title: "一千行的 main 函数", note: "他把整个公司写进了一个函数。", quip: "函数即宇宙。", score: { R: 2, D: 1 } },
       { title: "注释写着“别问我，我也不懂”", note: "最真诚的交接文档。", quip: "前任的诚实令人动容。", score: { S: 2, M: 1 } },
-      { title: "决定全部重写", note: "不破不立，加班重开。", quip: "新屎山已开工。", score: { F: 2, L: 1 } },
+      { title: "让 AI 全部重写一遍", note: "不破不立，一键重开。", quip: "新屎山已开工。", score: { F: 2, A: 1 } },
       { title: "先写一份详尽交接分析文档", note: "代码没看懂，文档先写好。", quip: "文档比代码还长。", score: { J: 2, Z: 1 } }
     ]
   },
@@ -402,7 +402,7 @@ window.SBIT_QUESTION_BANK = [
     text: "你作为面试官，候选人比你还懂，你会？",
     choices: [
       { title: "疯狂问八股文找回尊严", note: "我不懂原理，但我有题库。", quip: "题库是面试官的盾牌。", score: { Z: 2, J: 1 } },
-      { title: "真诚请教，偷偷记笔记", note: "免费的技术分享会。", quip: "白嫖到了一节课。", score: { S: 2, M: 1 } },
+      { title: "偷偷问 AI 他说得对不对", note: "现场开卷考试。", quip: "面试官也在作弊。", score: { A: 2, S: 1 } },
       { title: "给过，希望他来救我", note: "终于有人能接我的屎山。", quip: "接班人已物色。", score: { R: 2, L: 1 } },
       { title: "劝他别来", note: "兄弟，这里不值得。", quip: "面试官本人也想跑。", score: { F: 2, D: 1 } }
     ]
@@ -420,7 +420,7 @@ window.SBIT_QUESTION_BANK = [
     text: "被安排做一次技术分享，你准备的主题是？",
     choices: [
       { title: "从入门到放弃：我的摸鱼心法", note: "最真实的经验分享。", quip: "全场最受欢迎的分享。", score: { M: 2, J: 1 } },
-      { title: "熬三个通宵做一套 50 页 PPT", note: "动画比内容多。", quip: "PPT 渲染已占满显存。", score: { J: 2, L: 1 } },
+      { title: "让 AI 生成 50 页 PPT", note: "动画比内容多。", quip: "PPT 渲染已占满显存。", score: { J: 2, A: 1 } },
       { title: "讲一个真实的踩坑复盘", note: "痛苦是最好的教材。", quip: "伤疤也能变成课件。", score: { S: 2, L: 1 } },
       { title: "能不能让别人先讲", note: "拖到下个季度大家就忘了。", quip: "分享会被你拖黄了。", score: { D: 2, R: 1 } }
     ]
@@ -430,7 +430,7 @@ window.SBIT_QUESTION_BANK = [
     choices: [
       { title: "只有一个标题：TODO", note: "文档的骨架，代码的灵魂。", quip: "极简主义文档流派。", score: { M: 2, R: 1 } },
       { title: "目录、流程图、FAQ 一应俱全", note: "写完我自己都感动了。", quip: "然后没有人看。", score: { L: 2, J: 1 } },
-      { title: "复制粘贴三份旧文档拼起来", note: "缝合怪也是文档。", quip: "文档界的科学怪人。", score: { Z: 2, D: 1 } },
+      { title: "让 AI 生成二十页，没人看", note: "字数管够，内容随缘。", quip: "文档界的科学怪人。", score: { Z: 2, A: 1 } },
       { title: "一句话：代码即文档", note: "看不懂是你的问题。", quip: "嚣张，但很工程师。", score: { F: 2, D: 1 } }
     ]
   },
@@ -483,7 +483,7 @@ window.SBIT_QUESTION_BANK = [
     text: "群里出现“@所有人 请大家今天下班前填一下表”，你会？",
     choices: [
       { title: "立刻填完并回复“已填”", note: "做第一名，被领导看见。", quip: "抢到了沙发。", score: { J: 2, Z: 1 } },
-      { title: "等最后一分钟再填", note: "截止时间就是我的开始时间。", quip: "deadline 驱动型人格。", score: { M: 2, R: 1 } },
+      { title: "丢给 AI 帮我填", note: "截止时间就是我的开始时间。", quip: "deadline 驱动型人格。", score: { M: 2, A: 1 } },
       { title: "直到被私聊催才填", note: "不点我名，我就不存在。", quip: "隐身术修炼到家。", score: { D: 2, Z: 1 } },
       { title: "问：这个表有什么用", note: "灵魂拷问行政。", quip: "行政已读不回。", score: { F: 2, J: 1 } }
     ]
@@ -492,7 +492,7 @@ window.SBIT_QUESTION_BANK = [
     text: "Git 合并出现 200 个冲突，你会？",
     choices: [
       { title: "全部选“保留我的”", note: "我的代码才是正史。", quip: "同事的代码已蒸发。", score: { F: 2, D: 1 } },
-      { title: "一个个对比，耐心解决", note: "冲突是人生，人生是冲突。", quip: "你是冲突调解员。", score: { L: 2, J: 1 } },
+      { title: "丢给 AI 解，解完不看", note: "冲突是人生，交给 AI。", quip: "眼不见为净。", score: { A: 2, D: 1 } },
       { title: "删掉本地分支，重新 clone", note: "重开是最快的解决方案。", quip: "rm -rf 疗法。", score: { D: 2, J: 1 } },
       { title: "拉对方开会一起解决", note: "冲突需要面对面谈。", quip: "代码冲突升级成人际冲突。", score: { J: 2, Z: 1 } }
     ]
@@ -509,16 +509,16 @@ window.SBIT_QUESTION_BANK = [
   {
     text: "让 AI 写的代码上线出了 bug，你会怎么说？",
     choices: [
-      { title: "这是模型的幻觉，不是我", note: "锅已转交给硅基生命。", quip: "AI：我又背了一口。", score: { D: 2, F: 1 } },
+      { title: "这是模型的幻觉，不是我", note: "锅已转交给硅基生命。", quip: "AI：我又背了一口。", score: { D: 2, A: 1 } },
       { title: "逐行重读，自己修好", note: "AI 是实习生，我是导师。", quip: "实习生的屁股你来擦。", score: { L: 2, S: 1 } },
-      { title: "再让 AI 修它自己的 bug", note: "以毒攻毒，以模治模。", quip: "套娃 debug 已启动。", score: { M: 2, R: 1 } },
+      { title: "再让 AI 修它自己的 bug", note: "以毒攻毒，以模治模。", quip: "套娃 debug 已启动。", score: { A: 2, M: 1 } },
       { title: "周报写「探索 AI 提效」", note: "翻车也算探索的一部分。", quip: "事故也能包装成亮点。", score: { Z: 2, J: 1 } }
     ]
   },
   {
     text: "同事丢来一个 3000 行的 PR 让你 review，你会？",
     choices: [
-      { title: "LGTM，approve", note: "相信同事，也相信命运。", quip: "菩萨点头，众生合入。", score: { R: 2, M: 1 } },
+      { title: "LGTM，approve", note: "AI 应该也帮我看过了。", quip: "菩萨点头，众生合入。", score: { R: 2, A: 1 } },
       { title: "只挑命名和缩进提意见", note: "大的看不懂，小的显认真。", quip: "Review 了个寂寞。", score: { J: 2, Z: 1 } },
       { title: "要求拆成十个小 PR", note: "你拆完了我再说。", quip: "成功把锅推了回去。", score: { F: 2, S: 1 } },
       { title: "认真看完，留言 47 条", note: "今晚不睡了。", quip: "同事已把你拉黑。", score: { L: 2, J: 1 } }
@@ -545,7 +545,7 @@ window.SBIT_QUESTION_BANK = [
   {
     text: "接手 2009 年的祖传代码，注释写着“千万别动”，你会？",
     choices: [
-      { title: "听话，绕着它写", note: "前人的警告都是血换的。", quip: "敬畏是最好的设计模式。", score: { R: 2, S: 1 } },
+      { title: "让 AI 解读，然后绕着写", note: "前人的警告都是血换的。", quip: "敬畏是最好的设计模式。", score: { R: 2, A: 1 } },
       { title: "动它，我不信邪", note: "注释又不是法律。", quip: "古神已被惊醒。", score: { F: 2, L: 1 } },
       { title: "先读三天，摸清每一层地层", note: "考古需要耐心和手电筒。", quip: "你已是半个文物专家。", score: { S: 2, L: 1 } },
       { title: "推荐给新同事来负责", note: "新人需要成长机会。", quip: "所谓传承，就是传锅。", score: { D: 2, J: 1 } }
@@ -574,16 +574,16 @@ window.SBIT_QUESTION_BANK = [
     choices: [
       { title: "真在干活，明天要上线", note: "没人看见，但它确实存在。", quip: "真·加班，无观众。", score: { L: 2, R: 1 } },
       { title: "把 23:59 的屏幕截图发圈", note: "灯光、角度、时间都要对。", quip: "奋斗摄影大赛冠军。", score: { Z: 2, J: 1 } },
-      { title: "窗口模式打游戏", note: "等老板先走，我才能走。", quip: "敌军还有三秒到达。", score: { M: 2, Z: 1 } },
+      { title: "让 Agent 跑着，我打游戏", note: "等老板先走，我才能走。", quip: "敌军还有三秒到达。", score: { M: 2, A: 1 } },
       { title: "等打车报销时间到了再走", note: "加班不为公司，为报销。", quip: "精打细算的清醒人。", score: { S: 2, M: 1 } }
     ]
   },
   {
     text: "老板宣布“以后代码都让 AI 写”，你心里想的是？",
     choices: [
-      { title: "太好了，终于能光明正大摸鱼", note: "AI 打工，我来监工。", quip: "监工的尽头是被优化。", score: { M: 2, F: 1 } },
-      { title: "那我先把 Prompt 练好", note: "咒语念得好，饭碗保得住。", quip: "提示词巫师已入门。", score: { J: 2, L: 1 } },
-      { title: "那 bug 也让 AI 背吧", note: "责任链路要同步迁移。", quip: "AI：锅从天降。", score: { F: 2, S: 1 } },
+      { title: "太好了，终于能光明正大摸鱼", note: "AI 打工，我来监工。", quip: "监工的尽头是被优化。", score: { M: 2, A: 1 } },
+      { title: "那我先把提示词练好", note: "咒语念得好，饭碗保得住。", quip: "提示词巫师已入门。", score: { A: 2, J: 1 } },
+      { title: "那 bug 也让 AI 背吧", note: "责任链路要同步迁移。", quip: "AI：锅从天降。", score: { F: 2, A: 1 } },
       { title: "听着吧，上次说的是低代码", note: "风口来了又走。", quip: "老员工的淡定。", score: { R: 2, S: 1 } }
     ]
   },
@@ -594,6 +594,168 @@ window.SBIT_QUESTION_BANK = [
       { title: "从没更新过，懒得走", note: "走也是一件麻烦事。", quip: "稳定性满分。", score: { M: 2, R: 1 } },
       { title: "随时更新，一键投递", note: "机会只给准备好的人。", quip: "猎头的 VIP 客户。", score: { F: 2, J: 1 } },
       { title: "藏在网盘深处，假装不在乎", note: "但每周都偷看一次。", quip: "嘴上不想，手很诚实。", score: { D: 2, Z: 1 } }
+    ]
+  },
+  {
+    text: "写代码时补全弹出一大段灰字，你会？",
+    choices: [
+      { title: "闭眼按 Tab，信它", note: "它比我更懂我想写啥。", quip: "小拇指先于大脑行动。", score: { A: 3 } },
+      { title: "逐行看完再决定要不要", note: "补全也要过安检。", quip: "人肉安检，速度感人。", score: { S: 2, A: 1 } },
+      { title: "按 Esc，我自己写", note: "灰字是诱惑，不是答案。", quip: "古法传人，当场抗拒。", score: { F: 2, L: 1 } },
+      { title: "盯着它发呆，等它写完", note: "反正它会接着往下补。", quip: "人机协作，人负责发呆。", score: { M: 2, A: 1 } }
+    ]
+  },
+  {
+    text: "公司网络断了一小时，你在干嘛？",
+    choices: [
+      { title: "对着编辑器发呆，等网回来", note: "没有 AI，我连括号都怕。", quip: "断网即断手。", score: { A: 3 } },
+      { title: "继续手写，正好没人打扰", note: "安静的一小时最高效。", quip: "古法程序员的黄金时段。", score: { L: 2, J: 1 } },
+      { title: "合理摸鱼，这是不可抗力", note: "断网是老天给的假。", quip: "天意如此，不敢违抗。", score: { M: 2, D: 1 } },
+      { title: "在群里第一个喊「网断了」", note: "先让大家知道我很急。", quip: "急得很有存在感。", score: { Z: 2, A: 1 } }
+    ]
+  },
+  {
+    text: "同事的 PR 一看就是 AI 生成的，同一个函数写了五遍，你会？",
+    choices: [
+      { title: "LGTM，AI 应该自己审过", note: "机器写的，机器负责。", quip: "信任链完美闭环。", score: { R: 2, A: 1 } },
+      { title: "逐行审，顺手删掉四遍", note: "AI 写 10 分钟，我审 3 小时。", quip: "泔水清道夫已上岗。", score: { L: 2, J: 1 } },
+      { title: "打回去：你自己读过吗", note: "先自审，再来找我。", quip: "评论区温度骤降。", score: { F: 2, J: 1 } },
+      { title: "丢给另一个 AI 帮我审", note: "以 AI 之道还治 AI 之身。", quip: "AI 审 AI，人类下班。", score: { A: 3 } }
+    ]
+  },
+  {
+    text: "AI 说某个库有这个方法，可编译器说找不到，你会？",
+    choices: [
+      { title: "肯定是版本问题，升级一下", note: "AI 说有，那就一定有。", quip: "幻觉信徒，虔诚满分。", score: { A: 3 } },
+      { title: "打开官方文档核实", note: "文档不会骗人，AI 会。", quip: "清醒是一种美德。", score: { S: 2, L: 1 } },
+      { title: "截图发群：AI 又编 API 了", note: "笑料要第一时间分享。", quip: "群友已笑出声。", score: { Z: 2, F: 1 } },
+      { title: "这功能先不做了", note: "惹不起，躲得起。", quip: "需求自然死亡。", score: { D: 2, M: 1 } }
+    ]
+  },
+  {
+    text: "老板说「用了 AI，效率至少要翻倍」，你的反应？",
+    choices: [
+      { title: "好的，排期砍一半", note: "嘴比 AI 生成得还快。", quip: "排期已被 AI 压缩。", score: { R: 2, A: 1 } },
+      { title: "问：那工资也翻倍吗？", note: "效率翻倍，诉求同步。", quip: "会议室温度骤降。", score: { F: 2, D: 1 } },
+      { title: "连夜开八个 Agent 冲产能", note: "人不够，Agent 来凑。", quip: "token 账单在颤抖。", score: { A: 3 } },
+      { title: "做一页「AI 提效 300%」", note: "数据可以生成，汇报必须到位。", quip: "提效全靠箭头。", score: { Z: 2, J: 1 } }
+    ]
+  },
+  {
+    text: "你键盘上的 Tab 键现在是什么状态？",
+    choices: [
+      { title: "磨得发亮，比空格还亮", note: "一天一万次接受补全。", quip: "键帽已出包浆。", score: { A: 3 } },
+      { title: "跟新的一样，补全早卸了", note: "我只信自己的手。", quip: "古法缩进，原汁原味。", score: { F: 2, L: 1 } },
+      { title: "不知道，好久没碰键盘了", note: "反正有 Agent 在敲。", quip: "键盘：我是谁我在哪。", score: { M: 2, A: 1 } },
+      { title: "定期擦拭，还贴了标签", note: "工位整洁也是 KPI。", quip: "仪式感拉满。", score: { J: 2, Z: 1 } }
+    ]
+  },
+  {
+    text: "有人问你「这段是你写的还是 AI 写的」，你会？",
+    choices: [
+      { title: "当然是我写的（心虚）", note: "我也参与了，我按了 Tab。", quip: "按 Tab 也算劳动。", score: { Z: 2, A: 1 } },
+      { title: "AI 写的，有问题找它", note: "锅随代码一起甩出去。", quip: "AI：又是我？", score: { D: 2, A: 1 } },
+      { title: "我写的，每一行都能讲清", note: "古法编程，全程可溯源。", quip: "手作代码，品质保证。", score: { L: 2, S: 1 } },
+      { title: "重要吗？能跑不就行", note: "出处不重要，结果重要。", quip: "哲学家式回避。", score: { R: 2, A: 1 } }
+    ]
+  },
+  {
+    text: "面试官说「本场禁止使用 AI」，你的内心是？",
+    choices: [
+      { title: "完了，外置大脑被没收了", note: "手写代码当场宕机。", quip: "裸考的感觉回来了。", score: { A: 3 } },
+      { title: "正合我意，手写是主场", note: "刷了三百天题就等今天。", quip: "古法面试，主场作战。", score: { L: 2, J: 1 } },
+      { title: "问：入职以后能用吗？", note: "先问清规则再发挥。", quip: "清醒面试者。", score: { S: 2, J: 1 } },
+      { title: "先说「我去趟洗手间」", note: "人在厕所，手机在手。", quip: "战术性离场。", score: { D: 2, A: 1 } }
+    ]
+  },
+  {
+    text: "周末想做个小工具，你会怎么写？",
+    choices: [
+      { title: "对 AI 说感觉，一路全接受", note: "代码不看，氛围到位。", quip: "vibe coding 已启动。", score: { A: 3 } },
+      { title: "开 vim 手搓，享受过程", note: "写代码本身就是度假。", quip: "匠人的周末。", score: { L: 2, J: 1 } },
+      { title: "先建个看板拆任务", note: "周末项目也要有流程。", quip: "看板永不缺席。", score: { J: 2, Z: 1 } },
+      { title: "想了想，还是躺着吧", note: "工具不做也能活。", quip: "需求在周末自然死亡。", score: { M: 2, R: 1 } }
+    ]
+  },
+  {
+    text: "你现在同时开着几个 Agent 在跑任务？",
+    choices: [
+      { title: "八个，我是包工头", note: "我只负责派活和付账。", quip: "账单正在燃烧。", score: { A: 2, Z: 1 } },
+      { title: "一个都没有，我自己写", note: "人肉单线程，稳定可靠。", quip: "古法单核处理器。", score: { F: 2, L: 1 } },
+      { title: "一个，跑完我还要逐行看", note: "并发越多，审核越多。", quip: "清醒的单 Agent 用户。", score: { S: 2, A: 1 } },
+      { title: "开了，然后我去喝咖啡了", note: "它们在跑，我在躲。", quip: "人类已离开工位。", score: { D: 2, A: 1 } }
+    ]
+  },
+  {
+    text: "月中 AI 额度就用完了，你会？",
+    choices: [
+      { title: "自掏腰包续费，不能停", note: "停了我就不会写了。", quip: "token 比咖啡还刚需。", score: { A: 2, L: 1 } },
+      { title: "回归古法，手写半个月", note: "正好找回点手感。", quip: "被迫重返石器时代。", score: { R: 2, D: 1 } },
+      { title: "蹭同事的额度接着用", note: "额度是大家的。", quip: "共享经济践行者。", score: { M: 2, A: 1 } },
+      { title: "写报告申请扩额度", note: "先走流程，再写代码。", quip: "审批流比代码还长。", score: { J: 2, Z: 1 } }
+    ]
+  },
+  {
+    text: "AI 写的测试全绿，但功能明显不对，你会？",
+    choices: [
+      { title: "测试全绿就是没问题", note: "红绿灯说了算。", quip: "绿色是最好的安慰。", score: { R: 2, A: 1 } },
+      { title: "重写测试，顺便骂两句", note: "测试替 AI 撒了谎。", quip: "测试也需要被测试。", score: { F: 2, L: 1 } },
+      { title: "仔细看它到底测了什么", note: "原来它测的是 1+1=2。", quip: "清醒，但更累了。", score: { S: 2, L: 1 } },
+      { title: "让 AI 再改，改到对为止", note: "报错丢回去就好。", quip: "第十八轮对话进行中。", score: { A: 3 } }
+    ]
+  },
+  {
+    text: "同事笑你「还在古法编程」，你怎么回？",
+    choices: [
+      { title: "对，非遗传承，你们不懂", note: "手作代码有体温。", quip: "匠人尊严不容侵犯。", score: { F: 2, L: 1 } },
+      { title: "默默装上了补全插件", note: "时代的车轮，先上车。", quip: "古法传人连夜转型。", score: { A: 2, R: 1 } },
+      { title: "当晚报了三门 AI 课", note: "焦虑是最好的学习动力。", quip: "课程收藏 +3。", score: { J: 2, A: 1 } },
+      { title: "笑笑，然后去茶水间", note: "让嘲讽暂时离开工位。", quip: "物理隔离嘲讽。", score: { D: 2, M: 1 } }
+    ]
+  },
+  {
+    text: "刷到「AI 将取代八成程序员」的新闻，你会？",
+    choices: [
+      { title: "焦虑到凌晨，顺手报个课", note: "35 岁和 AI 一起压过来。", quip: "双重焦虑已叠满。", score: { J: 2, A: 1 } },
+      { title: "取代就取代吧，先睡了", note: "该来的总会来。", quip: "认命是最好的安眠药。", score: { R: 2, M: 1 } },
+      { title: "转发到群里，配文「完了」", note: "焦虑也要有观众。", quip: "群里一片哀嚎。", score: { Z: 2, A: 1 } },
+      { title: "上次是低代码，再上次是外包", note: "狼来了听了十年。", quip: "老员工的从容。", score: { S: 2, F: 1 } }
+    ]
+  },
+  {
+    text: "Agent 跑完重构，回复你「已完成」，你会？",
+    choices: [
+      { title: "直接合并，它说完成就完成", note: "Agent 不会骗人吧。", quip: "信任是最大的漏洞。", score: { A: 3 } },
+      { title: "先跑一遍全量测试", note: "「已完成」是 AI 最大的谎言。", quip: "怀疑是程序员的本能。", score: { S: 2, L: 1 } },
+      { title: "全部回滚，还是自己来", note: "我信不过任何人，包括 AI。", quip: "反骨不分人机。", score: { F: 2, L: 1 } },
+      { title: "截图写进周报：重构完成", note: "成果先认领，细节再说。", quip: "功劳已收入囊中。", score: { Z: 2, A: 1 } }
+    ]
+  },
+  {
+    text: "你写提示词的风格最像哪种？",
+    choices: [
+      { title: "三百字小作文，附格式要求", note: "提示词比需求文档还细。", quip: "咒语工程师已上线。", score: { A: 3 } },
+      { title: "一句「帮我写个能跑的」", note: "剩下的交给缘分。", quip: "极简主义许愿。", score: { M: 2, A: 1 } },
+      { title: "不写，我不用这玩意", note: "我的提示词是键盘。", quip: "古法拒绝一切咒语。", score: { F: 2, D: 1 } },
+      { title: "每次都追问「你确定吗」", note: "AI 越自信，我越怀疑。", quip: "审讯式提问。", score: { S: 2, A: 1 } }
+    ]
+  },
+  {
+    text: "AI 生成的代码线上出事了，复盘会上你会说？",
+    choices: [
+      { title: "这段是 AI 写的", note: "锅甩给不会说话的那位。", quip: "AI：我又背了。", score: { D: 2, A: 1 } },
+      { title: "是我没审仔细，我的锅", note: "背锅是人类最后的岗位。", quip: "主动认领，格局打开。", score: { L: 2, R: 1 } },
+      { title: "以后 AI 代码必须双人审", note: "顺便再建个新流程。", quip: "流程又长了一截。", score: { J: 3 } },
+      { title: "保持沉默，等别人先开口", note: "复盘会的最优解是隐身。", quip: "沉默是金，锅是铁。", score: { R: 2, M: 1 } }
+    ]
+  },
+  {
+    text: "说实话，离了 AI 你还能写代码吗？",
+    choices: [
+      { title: "不能，它就是我的手", note: "断网即失业。", quip: "坦诚得令人心疼。", score: { A: 3 } },
+      { title: "能，但慢得想辞职", note: "手速回到大学时代。", quip: "古法速度，现代焦虑。", score: { S: 2, A: 1 } },
+      { title: "能，我本来就不怎么用", note: "我是最后的手艺人。", quip: "非遗认证程序员。", score: { L: 2, J: 1 } },
+      { title: "无所谓，反正也没在写", note: "有没有 AI 都一样摸。", quip: "情绪极其稳定。", score: { M: 2, R: 1 } }
     ]
   }
 ];
