@@ -38,7 +38,10 @@
       cards.forEach((card, index) => {
         card.style.transform = `rotateY(${index * step}deg) translateZ(${radius}px)`;
       });
-      world.style.transform = `rotateX(var(--tilt)) rotateZ(var(--roll, 0deg)) translateZ(${-radius * .35}px)`;
+      // Keep the front/back vertical spread roughly constant: bigger rings get a flatter tilt.
+      stage.style.setProperty("--tilt", `${-Math.min(12, Math.atan(110 / radius) * 180 / Math.PI).toFixed(2)}deg`);
+      // Pull the ring back so the front card sits ~2 card-widths from the camera however big the ring is.
+      world.style.transform = `rotateX(var(--tilt)) rotateZ(var(--roll, 0deg)) translateZ(${-(radius - cw * 2.2)}px)`;
     }
 
     const frontIndex = () => ((Math.round(-angle / step) % count) + count) % count;

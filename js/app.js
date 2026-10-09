@@ -83,10 +83,10 @@
 
   // ---------- rarity tiers + collection ----------
   const TIERS = [
-    { key: "UR", max: 1.5, color: "#ff4f9a", label: "传说馊味" },
-    { key: "SSR", max: 2.0, color: "#ffd84d", label: "极品馊味" },
-    { key: "SR", max: 2.9, color: "#c77dff", label: "稀有馊味" },
-    { key: "R", max: 3.9, color: "#5ab8ff", label: "常见馊味" },
+    { key: "UR", max: 1.3, color: "#ff4f9a", label: "传说馊味" },
+    { key: "SSR", max: 1.8, color: "#ffd84d", label: "极品馊味" },
+    { key: "SR", max: 2.3, color: "#c77dff", label: "稀有馊味" },
+    { key: "R", max: 3.1, color: "#5ab8ff", label: "常见馊味" },
     { key: "N", max: Infinity, color: "#9a9a8a", label: "大众馊味" }
   ];
   const tierOf = (type) => TIERS.find((tier) => (rarity[type.code] || 0) <= tier.max);
