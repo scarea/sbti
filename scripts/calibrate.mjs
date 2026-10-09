@@ -47,8 +47,18 @@ if (write) {
     const re = new RegExp(`(^\\s*code:\\s*"${t.code}"[\\s\\S]*?bias:\\s*)-?[\\d.]+`, "m");
     source = source.replace(re, `$1${t.bias}`);
   });
+  // Store the resulting distribution as each type's displayed rarity, so the page doesn't simulate at load.
+  const final = engine.simulate(bank, types, { runs: 40000 });
+  types.forEach((t) => {
+    const value = Number(final[t.code].toFixed(2));
+    const withRarity = new RegExp(`(^\\s*code:\\s*"${t.code}"[\\s\\S]*?rarity:\\s*)-?[\\d.]+`, "m");
+    const block = source.match(new RegExp(`^\\s*code:\\s*"${t.code}"[\\s\\S]*?bias:[^\\n]*`, "m"))[0];
+    if (/rarity:/.test(block)) source = source.replace(withRarity, `$1${value}`);
+    else source = source.replace(block, block.replace(/(\n(\s*)bias:[^\n]*)/, `$1\n$2rarity: ${value},`));
+  });
   fs.writeFileSync(path.join(root, "data/types.js"), source);
-  console.log("biases written to data/types.js\n");
+  console.log("biases + rarity written to data/types.js\n");
+  report(final);
+} else {
+  report(engine.simulate(bank, types, { runs: 40000 }));
 }
-
-report(engine.simulate(bank, types, { runs: 40000 }));

@@ -198,25 +198,6 @@ h1, h2, h3, p { margin-top: 0; }
 .hero-meta b { color: var(--ink); font-size: 20px; margin-right: 4px; }
 
 .hero-art { position: relative; height: 560px; }
-.fan { position: absolute; inset: 0; perspective: 1200px; }
-.fan-card {
-  position: absolute;
-  left: 50%; top: 46%;
-  width: min(300px, 62%);
-  aspect-ratio: 418 / 392;
-  border-radius: 22px 12px 26px 12px;
-  overflow: hidden;
-  background: #0a0a08;
-  box-shadow: 0 30px 70px rgba(0,0,0,.45), 0 0 0 1px rgba(245,240,216,.12);
-  transform: translate(-50%, -50%) rotate(var(--r)) translate(var(--x), var(--y));
-  transition: transform .9s cubic-bezier(.2,.8,.2,1), opacity .9s ease, filter .9s ease;
-}
-.fan-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.fan-card[data-pos="0"] { --r: -2deg; --x: 0px; --y: 0px; z-index: 5; }
-.fan-card[data-pos="1"] { --r: 9deg; --x: 90px; --y: -30px; z-index: 4; filter: brightness(.7); }
-.fan-card[data-pos="2"] { --r: -12deg; --x: -100px; --y: -10px; z-index: 3; filter: brightness(.55); }
-.fan-card[data-pos="3"] { --r: 18deg; --x: 150px; --y: 40px; z-index: 2; filter: brightness(.4); opacity: .8; }
-.fan-card[data-pos="4"] { --r: -20deg; --x: -160px; --y: 60px; z-index: 1; filter: brightness(.3); opacity: .0; }
 .sticker {
   position: absolute; z-index: 6;
   right: 0; bottom: 18px;
@@ -320,29 +301,6 @@ section { padding: 64px 0; scroll-margin-top: 80px; }
   align-items: start;
 }
 .result-visual { display: grid; gap: 16px; position: sticky; top: 84px; }
-.holo-card {
-  position: relative;
-  aspect-ratio: 418 / 392;
-  border-radius: 28px 14px 32px 14px;
-  overflow: hidden;
-  background: #0a0a08;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--type) 70%, transparent), 0 30px 80px rgba(0,0,0,.5), 0 0 80px color-mix(in srgb, var(--type) 25%, transparent);
-  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-  transition: transform .15s ease-out;
-  will-change: transform;
-}
-.holo-inner, .holo-inner img { width: 100%; height: 100%; display: block; object-fit: cover; }
-.holo-shine {
-  position: absolute; inset: 0;
-  pointer-events: none;
-  mix-blend-mode: color-dodge;
-  opacity: .5;
-  background:
-    radial-gradient(circle at var(--sx, 50%) var(--sy, 30%), rgba(255,255,255,.35), transparent 40%),
-    linear-gradient(115deg, transparent 30%, rgba(255,79,154,.25) 42%, rgba(215,255,54,.25) 50%, rgba(116,255,121,.2) 58%, transparent 70%);
-  background-size: 100% 100%, 250% 250%;
-  background-position: 0 0, var(--sx, 50%) var(--sy, 50%);
-}
 .match-box, .radar-box, .sig-box, .detail {
   padding: 16px;
   border: 1px solid var(--line);
@@ -790,11 +748,7 @@ section { padding: 64px 0; scroll-margin-top: 80px; }
   .brand small { display: none; }
   .hero { gap: 8px; padding-top: 18px; }
   .hero-art { height: 330px; order: -1; }
-  .fan-card { width: 56%; }
-  .fan-card[data-pos="1"] { --x: 70px; }
-  .fan-card[data-pos="2"] { --x: -70px; }
-  .fan-card[data-pos="3"] { --x: 100px; }
-  .sticker { display: none; }
+          .sticker { display: none; }
   .hero-actions .cta-xl { width: 100%; }
   .hero-actions .ghost { width: 100%; }
   .section-head { display: block; }

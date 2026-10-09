@@ -73,12 +73,36 @@
     setTimeout(() => el.classList.remove("glitching"), 900);
   }
 
-  // ---------- rarity (seeded simulation, stable across loads) ----------
-  const rarity = engine.simulate(bank, types, { runs: 6000, seed: 7 });
+  // ---------- rarity ----------
+  // Precomputed by scripts/calibrate.mjs (random-answer distribution); falls back to the target share.
+  const rarity = Object.fromEntries(types.map((type) => [type.code, type.rarity ?? type.target ?? 0]));
   const rarityText = (type) => {
     const value = rarity[type.code];
     return value === undefined ? "--" : `${value.toFixed(1)}%`;
   };
+
+  // ---------- rarity tiers + collection ----------
+  const TIERS = [
+    { key: "UR", max: 1.8, color: "#ff4f9a", label: "传说馊味" },
+    { key: "SSR", max: 2.75, color: "#ffd84d", label: "极品馊味" },
+    { key: "SR", max: 3.8, color: "#c77dff", label: "稀有馊味" },
+    { key: "R", max: 5.5, color: "#5ab8ff", label: "常见馊味" },
+    { key: "N", max: Infinity, color: "#9a9a8a", label: "大众馊味" }
+  ];
+  const tierOf = (type) => TIERS.find((tier) => (rarity[type.code] || 0) <= tier.max);
+  const tierChip = (type) => { const t = tierOf(type); return `<span class="tier-chip tier-${t.key}" style="--tc:${t.color}">${t.key}</span>`; };
+  const collection = new Set((() => { try { return JSON.parse(storage.get("sbit-collection") || "[]"); } catch (e) { return []; } })());
+  // Results from before the collection existed still count.
+  if (storage.get("sbit-last") && typeByCode[storage.get("sbit-last")]) collection.add(storage.get("sbit-last"));
+  function collect(codes) {
+    const fresh = codes.filter((code) => !collection.has(code));
+    codes.forEach((code) => collection.add(code));
+    storage.set("sbit-collection", JSON.stringify([...collection]));
+    renderCollection();
+    renderTypeGrid(storage.get("sbit-last"));
+    return fresh;
+  }
+  document.querySelectorAll(".typeCountText, #typeCount").forEach((el) => { el.textContent = types.length; });
 
   // ---------- signatures ----------
   function signaturePool(type) {
@@ -185,18 +209,26 @@
     else if (day === 1 && hour < 12) eyebrow.textContent = "☕ 周一上午，灵魂还在加载中";
     else if (day === 0 || day === 6) eyebrow.textContent = "🛋️ 周末还想着上班，这本身就是一种症状";
 
-    const fan = $("#heroFan");
-    const order = [...types].sort(() => Math.random() - .5);
-    fan.innerHTML = order.slice(0, 5).map((type, i) => `<div class="fan-card" data-pos="${i}"><img src="${artPath(type)}" alt="" /></div>`).join("");
-    let cursor = 5;
-    setInterval(() => {
-      if (document.hidden) return;
-      const cards = [...fan.children];
-      cards.forEach((card) => { card.dataset.pos = String((Number(card.dataset.pos) + 4) % 5); });
-      const back = cards.find((card) => card.dataset.pos === "4");
-      if (back) back.querySelector("img").src = artPath(order[cursor % order.length]);
-      cursor += 1;
-    }, 2600);
+    const picks = [...types].sort(() => Math.random() - .5).slice(0, 6);
+    $("#cube").innerHTML = picks.map((type) => `<div class="cube-face" data-code="${type.code}" style="--c:${type.color}"><img src="${artPath(type)}" alt="${type.code}" draggable="false" /><span>${type.code}</span></div>`).join("");
+    const glyphs = ["☕", "🐛", "🔥", "🚽", "💀", "📎", "🧻", "⌨️"];
+    $("#orbit").innerHTML = glyphs.map((g, i) => `<i style="--a:${i * 360 / glyphs.length}deg;--R:clamp(150px, 19vw, 250px)">${g}</i>`).join("");
+    window.SBIT_FX.createCube({ stage: $("#cubeStage"), cube: $("#cube"), onFaceClick: (code) => openTypeModal(typeByCode[code]) });
+
+    const hero = document.querySelector(".hero");
+    const title = $("#heroTitle");
+    if (window.SBIT_FX.finePointer && !window.SBIT_FX.reduceMotion) {
+      hero.addEventListener("pointermove", (event) => {
+        const x = event.clientX / window.innerWidth - .5;
+        const y = event.clientY / window.innerHeight - .5;
+        title.style.setProperty("--hy", `${x * 16}deg`);
+        title.style.setProperty("--hx", `${-y * 12}deg`);
+      });
+      hero.addEventListener("pointerleave", () => {
+        title.style.setProperty("--hy", "0deg");
+        title.style.setProperty("--hx", "0deg");
+      });
+    }
 
     const last = storage.get("sbit-last");
     const lastType = last && typeByCode[last];
@@ -283,9 +315,9 @@
     if (!type) return;
     openModal(`
       <div class="detail-modal">
-        <div class="dm-art"><img src="${artPath(type)}" alt="${type.code} ${escapeHtml(type.name)}" /></div>
+        <div class="dm-art tilt" data-tilt-max="12"><img src="${artPath(type)}" alt="${type.code} ${escapeHtml(type.name)}" /></div>
         <div class="dm-copy">
-          <div class="badge-row"><span class="badge">出现率 ${rarityText(type)}</span></div>
+          <div class="badge-row">${tierChip(type)}<span class="badge">出现率 ${rarityText(type)}</span>${collection.has(type.code) ? '<span class="badge badge-ghost">✓ 已收集</span>' : ""}</div>
           <h2 class="glitch-code">${type.code}</h2>
           <h3>${escapeHtml(type.name)}</h3>
           <p class="result-tagline">${escapeHtml(type.tagline || "")}</p>
@@ -296,16 +328,33 @@
       </div>
       <div class="detail-grid" style="margin-top:18px">${detailsHtml(type)}</div>
     `, type.color);
+    window.SBIT_FX.bindTiltAll($("#modalBody"));
   }
 
   // ---------- type grid ----------
   function renderTypeGrid(mine) {
-    $("#typeGrid").innerHTML = types.map((type) => `
-      <button class="type-card ${type.code === mine ? "mine" : ""}" type="button" data-code="${type.code}" style="--c:${type.color}">
-        <div class="thumb"><img src="${artPath(type)}" alt="${type.code} ${escapeHtml(type.name)}" loading="lazy" /><span class="tag">${type.code}</span><span class="rar">${rarityText(type)}</span></div>
-        <h3>${escapeHtml(type.name)}</h3>
-        <p>${escapeHtml(type.tagline || "")}</p>
-      </button>`).join("");
+    $("#typeGrid").innerHTML = types.map((type) => {
+      const tier = tierOf(type);
+      const got = collection.has(type.code);
+      return `
+      <button class="type-card ${type.code === mine ? "mine" : ""} ${got ? "got" : ""}" type="button" data-code="${type.code}" style="--c:${type.color};--tc:${tier.color}">
+        <span class="tc-inner">
+          <span class="tc-front">
+            <span class="thumb"><img src="${artPath(type)}" alt="${type.code} ${escapeHtml(type.name)}" loading="lazy" /><span class="tag">${type.code}</span><span class="rar">${tier.key} · ${rarityText(type)}</span>${got ? '<span class="got-badge">✓ 已收集</span>' : ""}</span>
+            <h3>${escapeHtml(type.name)}</h3>
+            <p>${escapeHtml(type.tagline || "")}</p>
+          </span>
+          <span class="tc-back">
+            <span class="tier-chip tier-${tier.key}">${tier.key} · ${tier.label}</span>
+            <b>${type.code}</b>
+            <strong>${escapeHtml(type.name)}</strong>
+            <em>${escapeHtml(type.desc.slice(0, 54))}…</em>
+            <q>${escapeHtml((type.catchphrases || [""])[0])}</q>
+            <small>点击查看完整病历 →</small>
+          </span>
+        </span>
+      </button>`;
+    }).join("");
   }
   $("#typeGrid").addEventListener("click", (event) => {
     const card = event.target.closest(".type-card");
@@ -378,12 +427,9 @@
     $("#qIndex").textContent = String(quiz.index + 1).padStart(2, "0");
     $("#qTotal").textContent = total;
     $("#qBar").style.width = `${answered / total * 100}%`;
+    $("#qDots").innerHTML = quiz.questions.map((_, i) => `<i class="${quiz.answers[i] !== null ? "done" : ""} ${i === quiz.index ? "cur" : ""}" data-i="${i}" title="第 ${i + 1} 题"></i>`).join("");
     $("#qTag").textContent = `sample#${String(quiz.index + 1).padStart(2, "0")} · ${["气味采集中", "正在闻你的工位", "嗅探灵魂残留", "读取摸鱼日志", "分析带薪时长"][quiz.index % 5]}`;
-    const text = $("#qText");
-    text.textContent = q.text;
-    text.style.animation = "none";
-    void text.offsetWidth;
-    text.style.animation = "";
+    $("#qText").textContent = q.text;
     const keys = ["A", "B", "C", "D"];
     $("#qChoices").innerHTML = quiz.order[quiz.index].map((choiceIndex, pos) => {
       const c = q.choices[choiceIndex];
@@ -396,6 +442,18 @@
     $("#qSmell").style.width = `${Math.min(100, answered ? 18 + magnitude * 14 : 0)}%`;
     quiz.shownAt = performance.now();
     quiz.locked = false;
+    const card = $("#qCard");
+    card.classList.remove("out", "in");
+    void card.offsetWidth;
+    card.classList.add("in");
+  }
+
+  // Flip the question card out, then render the next one flipping in.
+  function gotoQuestion(index) {
+    const card = $("#qCard");
+    card.classList.remove("in");
+    card.classList.add("out");
+    setTimeout(() => { quiz.index = index; renderQuestion(); }, 240);
   }
 
   function choose(choiceIndex) {
@@ -412,14 +470,15 @@
     quip.classList.add("show");
     const answered = quiz.answers.filter((a) => a !== null).length;
     $("#qBar").style.width = `${answered / quiz.questions.length * 100}%`;
+    const dot = $(`#qDots i[data-i="${quiz.index}"]`);
+    if (dot) dot.classList.add("done");
     setTimeout(() => {
       const next = quiz.answers.findIndex((a, i) => a === null && i > quiz.index);
       const firstEmpty = quiz.answers.indexOf(null);
-      if (next !== -1) quiz.index = next;
-      else if (firstEmpty !== -1) quiz.index = firstEmpty;
-      else return finishQuiz();
-      renderQuestion();
-    }, 720);
+      if (next !== -1) gotoQuestion(next);
+      else if (firstEmpty !== -1) gotoQuestion(firstEmpty);
+      else finishQuiz();
+    }, 640);
   }
 
   $("#qChoices").addEventListener("click", (event) => {
@@ -427,7 +486,23 @@
     if (button) choose(Number(button.dataset.choice));
   });
   $("#quizBack").addEventListener("click", () => {
-    if (quiz.index > 0) { quiz.index -= 1; renderQuestion(); }
+    if (quiz.index > 0) gotoQuestion(quiz.index - 1);
+  });
+  $("#qDots").addEventListener("click", (event) => {
+    const dot = event.target.closest("i[data-i]");
+    if (dot && !quiz.locked && Number(dot.dataset.i) !== quiz.index) gotoQuestion(Number(dot.dataset.i));
+  });
+  // Choices lean toward the pointer.
+  $("#qChoices").addEventListener("pointermove", (event) => {
+    const choice = event.target.closest(".choice");
+    if (!choice || event.pointerType !== "mouse") return;
+    const rect = choice.getBoundingClientRect();
+    choice.style.setProperty("--ry", `${((event.clientX - rect.left) / rect.width - .5) * 14}deg`);
+    choice.style.setProperty("--rx", `${(.5 - (event.clientY - rect.top) / rect.height) * 14}deg`);
+  });
+  $("#qChoices").addEventListener("pointerout", (event) => {
+    const choice = event.target.closest(".choice");
+    if (choice && !choice.contains(event.relatedTarget)) { choice.style.removeProperty("--rx"); choice.style.removeProperty("--ry"); }
   });
   $("#quizClose").addEventListener("click", () => {
     $("#quiz").hidden = true;
@@ -462,7 +537,7 @@
       "<em>$</em> npm run diagnose --sample=12",
       "  ✓ 读取 12 条工位气味样本",
       "  ✓ 归一化 8 维馊味向量",
-      `  ✓ 与 16 种人格做余弦匹配`,
+      `  ✓ 与 ${types.length} 种人格做余弦匹配`,
       "  ⚠ warning: 检测到大量摸鱼残留",
       `  ✓ 最高相似度命中 <b>${type.code}</b>`,
       "<em>build passed</em> · 正在打印诊断书…"
@@ -493,7 +568,19 @@
     $("#resultEgg").hidden = !egg;
     $("#resultEgg").textContent = egg;
     $("#resultArt").innerHTML = `<img src="${artPath(type)}" alt="${type.code} ${escapeHtml(type.name)}" />`;
-    $("#resultRarity").textContent = `出现率 ${rarityText(type)}`;
+    const tier = tierOf(type);
+    $("#resultRarity").textContent = `${tier.key} · 出现率 ${rarityText(type)}`;
+    const badge = $("#resultTier");
+    badge.textContent = tier.key;
+    badge.className = `tier-badge tier-${tier.key}`;
+    badge.style.setProperty("--tc", tier.color);
+    $("#tcardCode").textContent = type.code;
+    $("#tcardName").textContent = type.name;
+    $("#tcardBackCode").textContent = type.code;
+    $("#tcardBackRarity").textContent = `${tier.key} · ${rarityText(type)}`;
+    $("#tcardBackQuote").textContent = `“${(type.catchphrases || [""])[0]}”`;
+    $("#tcardNo").textContent = String(types.indexOf(type) + 1).padStart(2, "0");
+    $("#tcardRadar").innerHTML = radarSvg(zToRadar(z));
     $("#resultName").textContent = type.name;
     $("#resultTagline").textContent = type.tagline || "";
     $("#resultDesc").textContent = type.desc;
@@ -510,13 +597,15 @@
     }));
     $("#radar").innerHTML = radarSvg(zToRadar(z), sharedType ? weightsToRadar(sharedType) : null);
 
-    renderCompare(type);
-    renderTypeGrid(type.code);
     storage.set("sbit-last", type.code);
+    renderCompare(type);
+    const fresh = collect([type.code]);
+    if (fresh.length) setTimeout(() => toast(`图鉴 +1：${type.code} 已收进收藏`), 1600);
 
     section.scrollIntoView({ behavior: "auto", block: "start" });
     glitch($("#resultCode"), type.code);
-    burst($("#resultHolo"), [...type.code, "{", "}", "=>", "NULL", "TODO", "💀", "404", "P0"], 48);
+    landCard();
+    setTimeout(() => burst($("#tcardStage"), [...type.code, "{", "}", "=>", "NULL", "TODO", "💀", "404", "P0"], 48), 1100);
   }
 
   $("#matchBars").addEventListener("click", (event) => {
@@ -524,22 +613,55 @@
     if (row) openTypeModal(typeByCode[row.dataset.code]);
   });
 
-  // Holo tilt on the result card
-  const holo = $("#resultHolo");
-  holo.addEventListener("pointermove", (event) => {
-    const rect = holo.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width;
-    const y = (event.clientY - rect.top) / rect.height;
-    holo.style.setProperty("--ry", `${(x - .5) * 14}deg`);
-    holo.style.setProperty("--rx", `${(.5 - y) * 12}deg`);
-    holo.style.setProperty("--sx", `${x * 100}%`);
-    holo.style.setProperty("--sy", `${y * 100}%`);
+  // 3D trading card: drag to spin, tap to flip, pointer tilt + glare.
+  const tcard = $("#tcard");
+  let spin = 0;
+  let spinDrag = null;
+  function setSpin(deg, animate) {
+    spin = deg;
+    tcard.style.transition = animate ? "transform .8s cubic-bezier(.3,1.3,.4,1)" : "none";
+    tcard.style.setProperty("--spin", `${deg}deg`);
+  }
+  function landCard() {
+    setSpin(0, false);
+    tcard.classList.remove("landing");
+    void tcard.offsetWidth;
+    tcard.classList.add("landing");
+    setTimeout(() => tcard.classList.remove("landing"), 1600);
+  }
+  tcard.addEventListener("pointerdown", (event) => {
+    spinDrag = { x: event.clientX, start: spin, moved: false };
+    tcard.setPointerCapture(event.pointerId);
+    tcard.classList.add("dragging");
   });
-  holo.addEventListener("pointerleave", () => {
-    holo.style.setProperty("--rx", "0deg");
-    holo.style.setProperty("--ry", "0deg");
+  tcard.addEventListener("pointermove", (event) => {
+    const rect = tcard.getBoundingClientRect();
+    tcard.style.setProperty("--gx", `${(event.clientX - rect.left) / rect.width * 100}%`);
+    tcard.style.setProperty("--gy", `${(event.clientY - rect.top) / rect.height * 100}%`);
+    if (spinDrag) {
+      const dx = event.clientX - spinDrag.x;
+      if (Math.abs(dx) > 5) spinDrag.moved = true;
+      setSpin(spinDrag.start + dx * .8, false);
+    } else if (event.pointerType === "mouse") {
+      tcard.style.transition = "transform .1s linear";
+      tcard.style.setProperty("--ry", `${((event.clientX - rect.left) / rect.width - .5) * 18}deg`);
+      tcard.style.setProperty("--rx", `${(.5 - (event.clientY - rect.top) / rect.height) * 14}deg`);
+    }
   });
-  holo.addEventListener("click", () => openTypeModal(currentResult && currentResult.type));
+  function endSpin() {
+    if (!spinDrag) return;
+    const moved = spinDrag.moved;
+    spinDrag = null;
+    tcard.classList.remove("dragging");
+    // Snap to the nearest face; a tap flips the card.
+    setSpin(moved ? Math.round(spin / 180) * 180 : Math.round(spin / 180) * 180 + 180, true);
+  }
+  tcard.addEventListener("pointerup", endSpin);
+  tcard.addEventListener("pointercancel", endSpin);
+  tcard.addEventListener("pointerleave", () => {
+    tcard.style.setProperty("--rx", "0deg");
+    tcard.style.setProperty("--ry", "0deg");
+  });
 
   $("#resultSigReroll").addEventListener("click", () => {
     if (!currentResult) return;
@@ -617,7 +739,7 @@
       const url = shareUrl(type) || "scarea.github.io/sbti";
       const dataUrl = await window.SBIT_POSTER.drawPoster({
         type,
-        rarity: rarityText(type),
+        rarity: `${tierOf(type).key} · ${rarityText(type)}`,
         signature,
         radarValues: zToRadar(z),
         radarLabels: engine.DIMS.map((key) => DIM_LABELS[key]),
@@ -697,6 +819,61 @@
   });
   $("#sigCopy").addEventListener("click", () => copyText(moodSignature).then(() => toast("签名已复制"), () => toast("复制失败")));
   $("#sigDetail").addEventListener("click", () => openTypeModal(moodType));
+
+  // ---------- gacha + collection ----------
+  function renderCollection() {
+    const count = types.filter((type) => collection.has(type.code)).length;
+    $("#collectCount").textContent = `${count}/${types.length}`;
+    $("#collectBar").style.width = `${count / types.length * 100}%`;
+    $("#collectDots").innerHTML = types.map((type) => `<i class="${collection.has(type.code) ? "on" : ""}" style="--c:${type.color}" title="${type.code} ${escapeHtml(type.name)}"></i>`).join("");
+  }
+  $("#tierLegend").innerHTML = TIERS.map((tier) => {
+    const pct = types.filter((type) => tierOf(type) === tier).reduce((sum, type) => sum + rarity[type.code], 0);
+    return `<span style="--tc:${tier.color}"><b>${tier.key}</b> ${tier.label} ${pct.toFixed(1)}%</span>`;
+  }).join("");
+  renderCollection();
+
+  const gachaLog = $("#gachaLog");
+  const gacha = window.SBIT_GACHA.createGacha({
+    stage: $("#gachaStage"),
+    pack: $("#pack"),
+    cardsEl: $("#gachaCards"),
+    types,
+    weights: rarity,
+    tierOf,
+    artPath,
+    onFlip(type, tier, card) {
+      gachaLog.innerHTML = `翻出 <b>${tier.key}</b> · ${type.code}「${escapeHtml(type.name)}」：${escapeHtml(type.tagline || "")}`;
+      if (["SSR", "UR"].includes(tier.key)) {
+        burst(card, ["★", "✦", tier.key, ...type.code], 30);
+        toast(tier.key === "UR" ? `🌈 UR！出货了：${type.name}` : `✨ SSR：${type.name}`);
+      }
+    },
+    onDone(drawn) {
+      const fresh = collect(drawn.map((type) => type.code));
+      const best = drawn.reduce((a, b) => (rarity[a.code] <= rarity[b.code] ? a : b));
+      gachaLog.innerHTML = fresh.length
+        ? `新收集 <b>${fresh.length}</b> 种：${fresh.join("、")}。本包最稀有：${best.code}（${tierOf(best).key}）。`
+        : `全是重复卡，同事都见过了。本包最稀有：${best.code}（${tierOf(best).key}）。`;
+      $("#packBtn").disabled = false;
+      $("#packBtn").textContent = "🎁 再拆一包";
+      $("#flipAllBtn").hidden = true;
+    }
+  });
+  function openPack() {
+    if (!gacha.open()) return;
+    $("#packBtn").disabled = true;
+    $("#packBtn").textContent = "拆包中…";
+    $("#flipAllBtn").hidden = false;
+    gachaLog.textContent = "撕开了！点卡片逐张翻，背面越亮越稀有。";
+  }
+  $("#pack").addEventListener("click", openPack);
+  $("#packBtn").addEventListener("click", openPack);
+  $("#flipAllBtn").addEventListener("click", () => gacha.flipAll());
+
+  // ---------- 3D bindings ----------
+  window.SBIT_FX.bindReveal();
+  window.SBIT_FX.bindTiltAll();
 
   // ---------- easter eggs ----------
   let logoClicks = 0;
