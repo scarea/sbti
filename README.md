@@ -8,34 +8,60 @@
 
 - 在线体验：<https://scarea.github.io/sbti/>
 - 原创仓库：<https://github.com/scarea/sbti>
-- 示例分享页：<https://scarea.github.io/sbti/?result=RAGE#sharedView>
+- 示例分享页：<https://scarea.github.io/sbti/r/rage.html>
 
 ## 在线内容
 
-- 30 道恶臭采样题库，每次随机抽 12 题
-- 16 种原创程序员人格结果
-- 每种人格对应 1 张生成式抽象图片
-- 1000 条程序员风格个性签名
-- 测试完成后自动展示结果弹窗
-- 支持分享结果链接：`?result=RAGE#sharedView`
-- 分享链接进入后展示单独的结果查看页，并引导访客重新采样
-- 支持暗黑/明亮模式
-- 支持 3D 今日上班情绪环形转盘
-- 支持代码雨、终端采样日志、人格预判、结果 glitch reveal、粒子爆炸、3D 结果卡翻转等交互效果
+- 56 道题库，每次随机抽 12 题，选项顺序也随机打乱；选完弹出一句即时吐槽
+- 16 种原创程序员馊味人格：口头禅、临床症状、隐藏天赋、致命 bug、适合岗位、本命 commit、生存指南、最佳搭档与天敌
+- 余弦相似度计分 + 自动校准，出现率由模拟得出（不是手写的假数据）
+- 854 条手写个性签名（每种人格 42 条 + 182 条通用）
+- 结果页：全息卡片、Top 3 相似度、8 维雷达图、今日签名
+- 一键生成 1080×1920 分享海报（手机长按保存）
+- 挑战链接：朋友打开后能测自己，并看到两人的「馊味兼容度」
+- 每种人格独立的分享页 `r/<code>.html`，带 Open Graph 预览图
+- 3D 人格转盘：拖拽惯性、点击定位、抽今日人格
+- 彩蛋：秒答检测、全选同一项、按时段变化的文案、点 logo 5 次、键盘输入 sudo
+- 暗黑/明亮模式，支持 prefers-reduced-motion，动画离屏自动暂停
 
 ## 项目结构
 
 ```text
 .
-├── index.html          # 主页面，包含 HTML/CSS/JS 交互逻辑
-├── data/               # 可编辑题库和个性签名配置
-│   ├── questions.js    # 30 题题库，每次随机抽 12 题
-│   └── signatures.js   # 个性签名种子和生成配置
-├── sbit-assets/        # 16 张人格结果图片
-├── start.command       # macOS 本地启动脚本
-└── README.md           # 项目说明
+├── index.html               # 页面骨架
+├── css/app.css              # 样式
+├── js/
+│   ├── engine.js            # 计分引擎（浏览器和 Node 共用）
+│   ├── app.js               # 页面交互：答题、结果、分享、图鉴
+│   ├── ring.js              # 3D 人格转盘
+│   └── poster.js            # canvas 分享海报
+├── data/
+│   ├── questions.js         # 题库
+│   ├── types.js             # 16 种人格设定 + 组合文案
+│   └── signatures.js        # 个性签名
+├── assets/
+│   ├── types/*.webp         # 人格图（页面用）
+│   └── og/*.jpg             # 分享预览图
+├── r/*.html                 # 每种人格的分享落地页（脚本生成）
+├── scripts/
+│   ├── calibrate.mjs        # 校准结果分布
+│   └── build-share-pages.mjs# 生成 r/*.html
+└── start.command            # macOS 本地启动脚本
 ```
 
+## 计分原理
+
+1. 每题每个维度先算出「随机作答」时的期望和方差，把你的得分换算成偏离随机的程度（类似 z 分数）。
+2. 拿这 8 维向量和每种人格的倾向（`weights`，去中心化后）做余弦相似度。
+3. 再加上每种人格的 `bias`，取最高分。`bias` 由 `scripts/calibrate.mjs` 自动调，让随机作答时的结果分布接近 `target`。
+
+**改了题库或人格权重之后，务必重新校准：**
+
+```bash
+node scripts/calibrate.mjs --write
+```
+
+不加 `--write` 只打印当前分布。改了人格名称或副标题，再跑一下 `node scripts/build-share-pages.mjs` 更新分享页（第一个参数可以传你自己的站点地址）。
 
 ## 原创仓库
 
@@ -64,23 +90,13 @@ cd sbti
 
 ### 3. 新增题目
 
-编辑：
-
-```text
-data/questions.js
-```
-
-复制一个已有题目对象，修改 `text` 和 4 个 `choices` 即可。每个选项结构如下：
+编辑 `data/questions.js`，复制一个题目对象，修改 `text` 和 4 个 `choices`。每个选项：
 
 ```js
-{
-  title: "选项标题",
-  note: "选项吐槽说明",
-  score: { M: 2, F: 1 }
-}
+{ title: "选项标题", note: "选项副注", quip: "选中后的吐槽", score: { M: 2, F: 1 } }
 ```
 
-可用分数维度：
+建议每个选项分值总和为 3，同一题 4 个选项的主维度互不相同。可用维度：
 
 | Key | 含义 |
 | --- | --- |
@@ -93,30 +109,11 @@ data/questions.js
 | F | 反骨/反抗 |
 | R | 认命/顺从 |
 
-题库可以继续扩展，不需要改页面逻辑；页面会自动从题库中随机抽 12 题。
+加完题记得跑 `node scripts/calibrate.mjs --write`。
 
 ### 4. 新增个性签名
 
-编辑：
-
-```text
-data/signatures.js
-```
-
-常用改法：
-
-- 给某个人格的 `signatureSeeds.CODE` 增加短句。
-- 给 `globalSignatureSeeds` 增加全局签名。
-- 高阶改法：调整 `signatureProfiles` 中的 `subject / verb / tail`，让系统自动组合更多句子。
-
-示例：
-
-```js
-IMFW: [
-  "今天不是我在写代码，是键盘拖着尸体走。",
-  "新增一句你自己的抽象签名。"
-]
-```
+编辑 `data/signatures.js`，往对应人格的数组（或 `GLOBAL`）里加句子即可，页面直接读取，无需生成。
 
 ### 5. 提交修改
 
@@ -149,7 +146,6 @@ index.html
 ### 方式二：启动本地静态服务
 
 ```bash
-cd /Users/awen/code/sbti
 python3 -m http.server 8080
 ```
 
@@ -171,10 +167,7 @@ start.command
 
 ```text
 index.html
-data/
-sbit-assets/
-README.md
-start.command
+css/  js/  data/  assets/  r/
 ```
 
 ### 推荐平台
@@ -213,10 +206,10 @@ https://你的用户名.github.io/sbti/
 部署到公网后，用户测试完成并点击「分享链接」，会生成类似下面的 URL：
 
 ```text
-https://你的域名/index.html?result=RAGE#sharedView
+https://你的域名/r/rage.html
 ```
 
-朋友打开后会直接看到分享者的结果页，而不是重新进入弹窗；页面会引导朋友点击「我也要采样」。
+朋友打开后先看到分享者的结果，测完自己的会自动显示两人的馊味兼容度。旧格式 `?result=RAGE` 仍然兼容。
 
 > 注意：本地 `file:///Users/...` 链接不能作为公网分享链接。只有部署到 `http://` 或 `https://` 后，分享链接才适合发给朋友。
 
@@ -264,7 +257,8 @@ https://你的域名/index.html?result=RAGE#sharedView
 ## 隐私说明
 
 - 答题结果在浏览器本地计算。
-- 分享结果通过 URL 查询参数携带结果代码，例如 `?result=RAGE`。
+- 分享结果通过 URL 携带结果代码，例如 `r/rage.html` 或 `?r=RAGE`。
+- 主题偏好和上次结果代码保存在浏览器 localStorage，不会上传。
 - 页面没有登录、埋点、数据库或远程 API。
 - 如果部署平台自带访问日志或统计能力，请以对应平台说明为准。
 
